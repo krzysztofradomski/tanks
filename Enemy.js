@@ -6,8 +6,8 @@ module.exports = class Enemy {
         this.level = config.level;
         this.lives = config.evel;
         this.speed = 1000 / config.speed; //ile ruchów na 1s
-        this.position = config.position;
         this.origin = config.origin;
+        this.position = config.position;    
         this.on = config.on;      
         this.running;
         this.on ? this.start() : ``;
@@ -110,4 +110,13 @@ module.exports = class Enemy {
 
 }
 
-//let enemy2 = new Enemy('manowar', 666, 4);
+//example:
+// let enemy66config = {
+//         name: 'manowar', 
+//         level: 19, 
+//         speed: 25,
+//         origin: { x: 250, y: 250 },
+//         position: { x: 250, y: 250 },
+//         on: true
+//     };
+// let enemy1 = new Enemy(io, enemy66config);
