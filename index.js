@@ -23,7 +23,7 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	console.log('a user connected');
-	let config1 = {
+	let enemy1config = {
 		name: 'tank1', 
 		level: 1, 
 		speed: 10,
@@ -31,7 +31,7 @@ io.on('connection', function(socket){
 		position: { x: 250, y: 250 },
 		on: false
 	};
-	let enemy1 = new Enemy(io, config1);
+	let enemy1 = new Enemy(io, enemy1config);
 
   	socket.on('start', function(){
   		console.log('started');

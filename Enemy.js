@@ -27,17 +27,17 @@ module.exports = class Enemy {
 
                 switch (true) {
                     case Date.now() % 2 === 0:
-                        parseInt((Math.random()) * 2) === 0 ? this.position.y+=10 : this.position.y-=10;
+                        parseInt((Math.random()) * 2) === 0 ? this.position.x+=10 : this.position.y-=10;
                         console.log('date')
                         break;
                     default:
                         console.log('default')
-                        parseInt((Math.random()) * 2) === 0 ? this.position.x+=10 : this.position.x-=10;
+                        parseInt((Math.random()) * 2) === 0 ? this.position.y+=10 : this.position.x-=10;
                  } 
                  
-        } else {
-            this.position.x-=10;
-            this.position.y-=10;
+        } else if (0 >= this.position || 0 >= this.position.y) {
+            this.position.x+=10;
+            this.position.y+=10;
             }
         } else {
             return `Enemy does not exist`;
