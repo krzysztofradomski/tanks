@@ -110,7 +110,7 @@ module.exports = class Enemy {
 
 }
 
-//example:
+// example:
 // let enemy66config = {
 //         name: 'manowar', 
 //         level: 19, 
@@ -119,4 +119,4 @@ module.exports = class Enemy {
 //         position: { x: 250, y: 250 },
 //         on: true
 //     };
-// let enemy1 = new Enemy(io, enemy66config);
+// let enemy66 = new Enemy(io, enemy66config);
