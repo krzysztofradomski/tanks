@@ -1,6 +1,7 @@
 let app = require('express')();
 let http = require('http').Server(app);
 let io = require('socket.io')(http);
+
 let port = process.env.PORT || 3000;
 // let admin = require("firebase-admin");
 // let serviceAccount = require("./key.json");
@@ -22,23 +23,34 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	console.log('a user connected');
-	let enemy1 = new Enemy('tank', 1, 10, { x: 10, y: 10 });
-	let enemy1on = null;
+	let config1 = {
+		name: 'tank1', 
+		level: 1, 
+		speed: 10,
+		origin: { x: 250, y: 250 },
+		position: { x: 250, y: 250 },
+		on: false
+	};
+	let enemy1 = new Enemy(io, config1);
+
   	socket.on('start', function(){
+  		console.log('started');
   		enemy1.start();
-    	enemy1on === null ? enemy1on = setInterval(function() {io.emit('start', enemy1.position);}, 100) : enemy1on;
   	});
   	socket.on('stop', function(){
-  		clearInterval(enemy1on);
-  		enemy1on = null;
+  		console.log('stopped');
 	    enemy1.stop();
+  	});
+  	socket.on('reset', function(){
+  		console.log('resetted');
+	    enemy1.reset();
+	    	console.log(enemy1.position);
+  			console.log(enemy1.origin);
+	    enemy1.start();
   	});
   	socket.on('disconnect', function(){
 	    console.log('a user disconnected');
-	    clearInterval(enemy1on);
-	    enemy1on = null;
-	    enemy1.reset();
-	    enemy1.stop();
+	    enemy1.reset();  
   	});
 });
 

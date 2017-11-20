@@ -1,16 +1,14 @@
-let app = require('express')();
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
 module.exports = class Enemy {
 
-    constructor(name, level = 1, speed = 1, position = { x: 0, y: 0 }, on = false) {
-        this.name = name;
-        this.level = level;
-        this.lives = level;
-        this.speed = 1000 / speed; //ile ruchów na 1s
-        this.position = position;
-        this.origin = this.position;
-        this.on = on;
+    constructor(io, config) {
+        this.io = io;
+        this.name = config.name;
+        this.level = config.level;
+        this.lives = config.evel;
+        this.speed = 1000 / config.speed; //ile ruchów na 1s
+        this.position = config.position;
+        this.origin = config.origin;
+        this.on = config.on;      
         this.running;
         this.on ? this.start() : ``;
         this.sandbox = { x: 500, y: 500 }
@@ -26,18 +24,33 @@ module.exports = class Enemy {
     move() {
         if (this.name) {
             if (this.sandbox.x > this.position.x+10 && this.sandbox.y > this.position.y+10) {
-                 return Math.round(Math.random()) == 0 ? this.position.x+=10 : this.position.y+=10;
-                }
-            return Math.round(Math.random()) == 0 ? this.position.x-=10 : this.position.y-=10;
-        }
-        return `Enemy does not exist`;
+
+                switch (true) {
+                    case Date.now() % 2 === 0:
+                        parseInt((Math.random()) * 2) === 0 ? this.position.y+=10 : this.position.y-=10;
+                        console.log('date')
+                        break;
+                    default:
+                        console.log('default')
+                        parseInt((Math.random()) * 2) === 0 ? this.position.x+=10 : this.position.x-=10;
+                 } 
+                 
+        } else {
+            this.position.x-=10;
+            this.position.y-=10;
+            }
+        } else {
+            return `Enemy does not exist`;
+        }  
     }
 
     reset() {
          if (this.name) {
             this.on = false;
             clearInterval(this.running);
-            this.position = this.origin;
+            let x = this.origin.x;
+            let y = this.origin.y;
+            this.position = {x,y};
             return `Enemy resetted.`;
         }
         return `Enemy does not exist`;
@@ -48,13 +61,16 @@ module.exports = class Enemy {
             this.on = true;
             this.running = setInterval(() => {
                 this.move();
+                let pos = this.position;
                 console.log(`A ${this.name} moved to ${this.position.x}:${this.position.y}.`);
                 this.position.x % 3 == 0 ? this.shoot() : ``;
-                //io.emit('start', this.position);
+                this.io.emit('start', pos);
             }, this.speed)
 
             return `Enemy started.`;
-        } else return `Enemy already started.`;
+        } else if (this.on) {
+            return `Enemy already started.`;
+        }
         return `Enemy does not exist`;
     }
 

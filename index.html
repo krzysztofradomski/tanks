@@ -8,16 +8,19 @@
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" width="500" height="500" style="border:5px solid blue;">
-Your browser does not support the HTML5 canvas tag.</canvas>
+    <canvas id="myCanvas" width="500" height="500" style="border:5px solid blue;"></canvas>
     <br>
-     <button id="start">Start</button><button id="stop">Stop</button>
+     <button id="start">Start</button>
+     <button id="stop">Stop</button>
+     <button id="reset">Reset</button>
 
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
         let socket = io();
+        let canvas = document.getElementById('myCanvas');
+        let context = canvas.getContext('2d');
         $('#start').click(function(){
           socket.emit('start');
           return false;
@@ -26,15 +29,24 @@ Your browser does not support the HTML5 canvas tag.</canvas>
           socket.emit('stop');
           return false;
         });
-        socket.on('start', function(msg){
-           let m = msg.x + ' ' + msg.y;
-           ctx.lineTo(msg.x, msg.y);
-           console.log(m);
-           ctx.stroke();
+        $('#reset').click(function(){
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          socket.emit('reset');
+          return false;
         });
-        let c = document.getElementById("myCanvas");
-        let ctx = c.getContext("2d");
-        ctx.moveTo(0,0);
+        socket.on('start', function(msg){
+            let m = msg.x + ' ' + msg.y;
+            console.log(m);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            let centerX = msg.x;
+            let centerY = msg.y;
+            let radius = 5;
+            context.beginPath();
+            context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+            context.fillStyle = 'green';
+            context.fill();
+        });
+        
       });
     </script>
   </body>
