@@ -1,11 +1,11 @@
-module.exports = class Enemy {
+module.exports = class Tank {
 
     constructor(io, config) {
-        this.io = io;
+        this.io =  io;
         this.name = config.name;
         this.level = config.level;
         this.lives = config.evel;
-        this.speed = 1000 / config.speed; //ile ruchów na 1s
+        this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
         this.position = config.position;    
         this.on = config.on;      
@@ -19,7 +19,7 @@ module.exports = class Enemy {
         if (this.name) {
             return `A level ${this.level} ${this.name} spotted at ${this.position.x}:${this.position.y}, ${!this.on ? `engine idle.` : `moving at ${this.speed} speed.`}`
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     move() {
@@ -31,49 +31,48 @@ module.exports = class Enemy {
             this.movementQ.splice(0,1);
             let moveTo = this.generateMovement();
             this.position[moveTo.axis] = this.position[moveTo.axis] + moveTo.vector;
-            if (this.position.x >= this.sandbox.x-10 || this.position.y > this.sandbox.y-10 || this.position.x <= 10 || this.position.y <= 10) {
-                 this.movementQ.splice(0,1);
-                let moveTo = this.generateMovement();
-                this.position[moveTo.axis] = this.position[moveTo.axis] + moveTo.vector;
-            }
+            if (this.position.x > this.sandbox.x) {this.position.x = this.sandbox.x - this.speed}
+            if (this.position.y > this.sandbox.y) {this.position.y = this.sandbox.y - this.speed}
+            if (this.position.x < 0) {this.position.x = 0}
+            if (this.position.y < 0) {this.position.y = 0}
         } 
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     generateMovement() {   
         let moveNow = {axis: null, vector: null}
-        if (this.sandbox.x > this.position.x+10 && this.sandbox.y > this.position.y+10 
-            && 0 < this.position.x+10 && 0 < this.position.y+10) {
+        if (this.sandbox.x > this.position.x+this.speed && this.sandbox.y > this.position.y+this.speed 
+            && 0 < this.position.x+this.speed && 0 < this.position.y+this.speed) {
 
             switch (true) {
                 case Date.now() % 2 === 0:
-                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'x', vector: 10} : moveNow = {axis: 'y', vector: -10}
+                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'x', vector: this.speed} : moveNow = {axis: 'y', vector: -this.speed}
                     console.log('date')
                     break;
                 default:
                     console.log('default')
-                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'y', vector: 10} : moveNow = {axis: 'x', vector: -10}
+                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'y', vector: this.speed} : moveNow = {axis: 'x', vector: -this.speed}
              } 
              
-        } else if (0 >= this.position.x && this.position.y + 10 >= this.sandbox.y) {
-             this.movementQ.push({axis: 'x', vector: 10});
-             this.movementQ.push({axis: 'y', vector: -10});
-            } else if (0 >= this.position.x &&  0 >= this.position.y + 10) {
-             this.movementQ.push({axis: 'x', vector: 10});
-             this.movementQ.push({axis: 'y', vector: 10});
+        } else if (0 >= this.position.x && this.position.y + this.speed >= this.sandbox.y) {
+             this.movementQ.push({axis: 'x', vector: this.speed});
+             this.movementQ.push({axis: 'y', vector: -this.speed});
+            } else if (0 >= this.position.x &&  0 >= this.position.y + this.speed) {
+             this.movementQ.push({axis: 'x', vector: this.speed});
+             this.movementQ.push({axis: 'y', vector: this.speed});
             } else if (0 >= this.position.x) {
-             moveNow = {axis: 'x', vector: 10}
+             moveNow = {axis: 'x', vector: this.speed}
             }
             else if (0 >= this.position.y) {
-             moveNow = {axis: 'y', vector: 10}
+             moveNow = {axis: 'y', vector: this.speed}
             }  else if (this.sandbox.x >= this.position.x) {
-             moveNow = {axis: 'x', vector: -10}
+             moveNow = {axis: 'x', vector: -this.speed}
             } else if (this.sandbox.x < this.position.x) {
-             moveNow = {axis: 'x', vector: -10}
+             moveNow = {axis: 'x', vector: -this.speed}
             } else if (this.sandbox.y < this.position.y) {
-             moveNow = {axis: 'y', vector: -10}
+             moveNow = {axis: 'y', vector: -this.speed}
             } else {moveNow = {axis: 'x', vector: 0}}
-        if (this.movementQ.length < 10) {
+        if (this.movementQ.length < this.speed) {
             console.log('moveNow: ' + moveNow)
             this.movementQ.push(moveNow);
         } 
@@ -94,9 +93,9 @@ module.exports = class Enemy {
             let x = this.origin.x;
             let y = this.origin.y;
             this.position = {x,y};
-            return `Enemy resetted.`;
+            return `Tank resetted.`;
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     start() {
@@ -107,14 +106,14 @@ module.exports = class Enemy {
                 let pos = this.position;
                 console.log(`A ${this.name} moved to ${this.position.x}:${this.position.y}.`);
                 this.position.x % 3 == 0 ? this.shoot() : ``;
-                this.io.emit('start', pos);
+                this.io.emit('tankstart', pos);
             }, this.speed)
 
-            return `Enemy started.`;
+            return `Tank started.`;
         } else if (this.on) {
-            return `Enemy already started.`;
+            return `Tank already started.`;
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     stop() {
@@ -122,16 +121,16 @@ module.exports = class Enemy {
             this.on = false;
             clearInterval(this.running);
             console.log(this.movementQ)
-            return `Enemy stopped.`;
+            return `Tank stopped.`;
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     shoot() {
         if (this.name) {
             console.log(`Czolg rodzaju ${this.name} szczela w Natalie. Bang bang!`);
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
     collisionDetection() {
@@ -147,15 +146,15 @@ module.exports = class Enemy {
             delete this.position;
             delete this.on;
             delete this.running;
-            return `Enemy killed`;
+            return `Tank killed`;
         }
-        return `Enemy does not exist`;
+        return `Tank does not exist`;
     }
 
 }
 
 // example:
-// let enemy66config = {
+// let Tank66config = {
 //         name: 'manowar', 
 //         level: 19, 
 //         speed: 25,
@@ -163,4 +162,4 @@ module.exports = class Enemy {
 //         position: { x: 250, y: 250 },
 //         on: true
 //     };
-// let enemy66 = new Enemy(io, enemy66config);
+// let Tank66 = new Tank(io, Tank66config);

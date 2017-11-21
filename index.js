@@ -5,7 +5,8 @@ let io = require('socket.io')(http);
 let port = process.env.PORT || 3000;
 // let admin = require("firebase-admin");
 // let serviceAccount = require("./key.json");
-let Enemy = require('./Enemy.js')
+let Game = require('./Game.js')
+let Tank = require('./Tank.js')
 
 // admin.initializeApp({
 //     credential: admin.credential.cert(serviceAccount),
@@ -23,34 +24,49 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
 	console.log('a user connected');
-	let enemy1config = {
-		name: 'tank1', 
-		level: 1, 
-		speed: 10,
-		origin: { x: 250, y: 250 },
-		position: { x: 250, y: 250 },
-		on: false
-	};
-	let enemy1 = new Enemy(io, enemy1config);
+	let game = new Game(io);
+	// let tank1config = {
+	// 	name: 'tank1', 
+	// 	level: 1, 
+	// 	speed: 10,
+	// 	origin: { x: 250, y: 250 },
+	// 	position: { x: 250, y: 250 },
+	// 	on: false
+	// };
+	// let tank1 = new Tank(io, tank1config);
+	game.create();
 
-  	socket.on('start', function(){
+	// let tank2config = {
+	// 	name: 'tank2', 
+	// 	level: 1, 
+	// 	speed: 20,
+	// 	origin: { x: 150, y: 150 },
+	// 	position: { x: 150, y: 150 },
+	// 	on: false
+	// };
+	// let tank2 = new Tank(io, tank2config);
+
+  	socket.on('gamestart', function(){
   		console.log('started');
-  		enemy1.start();
+  		game.start();
+  		//tank2.start();
   	});
-  	socket.on('stop', function(){
+  	socket.on('gamestop', function(){
   		console.log('stopped');
-	    enemy1.stop();
+	    game.stop();
+	    //tank2.stop();
   	});
-  	socket.on('reset', function(){
+  	socket.on('gamereset', function(){
   		console.log('resetted');
-	    enemy1.reset();
-	    	console.log(enemy1.position);
-  			console.log(enemy1.origin);
-	    enemy1.start();
+	    game.reset();
+	    game.start();
+	    //tank2.reset();
+	    //tank2.start();
   	});
   	socket.on('disconnect', function(){
 	    console.log('a user disconnected');
-	    enemy1.reset();  
+	    game.reset();
+	    //tank2.reset();   
   	});
 });
 
