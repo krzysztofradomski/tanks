@@ -4,7 +4,7 @@ module.exports = class Tank {
         this.io =  io;
         this.name = config.name;
         this.level = config.level;
-        this.lives = config.evel;
+        this.lives = config.lives;
         this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
         this.position = config.position;    
@@ -13,11 +13,23 @@ module.exports = class Tank {
         this.on ? this.start() : ``;
         this.sandbox = { x: 500, y: 500 };
         this.movementQ = [];
+        this.enemysize = 10;
+        this.otherTanksPositions = [];
     }
 
     get info() {
         if (this.name) {
-            return `A level ${this.level} ${this.name} spotted at ${this.position.x}:${this.position.y}, ${!this.on ? `engine idle.` : `moving at ${this.speed} speed.`}`
+            return {
+                name: this.name, 
+                level: this.level, 
+                lives: this.lives, 
+                speed: this.speed, 
+                origin: this.origin, 
+                position: this.position, 
+                on: this.on, 
+                movementQ: this.movementQ,
+                otherTanksPositions: this.otherTanksPositions
+            }
         }
         return `Tank does not exist`;
     }
@@ -31,16 +43,17 @@ module.exports = class Tank {
             this.movementQ.splice(0,1);
             let moveTo = this.generateMovement();
             this.position[moveTo.axis] = this.position[moveTo.axis] + moveTo.vector;
-            if (this.position.x > this.sandbox.x) {this.position.x = this.sandbox.x - this.speed}
-            if (this.position.y > this.sandbox.y) {this.position.y = this.sandbox.y - this.speed}
-            if (this.position.x < 0) {this.position.x = 0}
-            if (this.position.y < 0) {this.position.y = 0}
+            if (this.position.x > this.sandbox.x-this.enemysize) {this.position.x = this.position.x - this.enemysize}
+            if (this.position.y > this.sandbox.y-this.enemysize) {this.position.y = this.sandbox.y - this.enemysize}
+            if (this.position.x < 0) {this.position.x = 0 + this.enemysize}
+            if (this.position.y < 0) {this.position.y = 0 + this.enemysize}  
+            console.log( this.name, this.movementQ);
         } 
         return `Tank does not exist`;
     }
 
     generateMovement() {   
-        let moveNow = {axis: null, vector: null}
+        let moveNow = {axis: 'x', vector: this.speed};
         if (this.sandbox.x > this.position.x+this.speed && this.sandbox.y > this.position.y+this.speed 
             && 0 < this.position.x+this.speed && 0 < this.position.y+this.speed) {
 
@@ -73,7 +86,7 @@ module.exports = class Tank {
              moveNow = {axis: 'y', vector: -this.speed}
             } else {moveNow = {axis: 'x', vector: 0}}
         if (this.movementQ.length < this.speed) {
-            console.log('moveNow: ' + moveNow)
+            console.log('moveNow: ' + moveNow.axis + ' ' + moveNow.vector)
             this.movementQ.push(moveNow);
         } 
         if ( Date.now() % 5 === 0) {
@@ -82,7 +95,7 @@ module.exports = class Tank {
                 this.movementQ.push(moveNow)
             }   
         }
-       return this.movementQ[this.movementQ.length-1]
+       return this.movementQ.length > 1 ? this.movementQ[this.movementQ.length-1] : this.generateMovement();
     } 
 
     reset() {
@@ -134,7 +147,9 @@ module.exports = class Tank {
     }
 
     collisionDetection() {
+        this.otherTanksPositions.map((v,i,arr) => { 
 
+        });
     }
 
     kill() {
@@ -152,14 +167,3 @@ module.exports = class Tank {
     }
 
 }
-
-// example:
-// let Tank66config = {
-//         name: 'manowar', 
-//         level: 19, 
-//         speed: 25,
-//         origin: { x: 250, y: 250 },
-//         position: { x: 250, y: 250 },
-//         on: true
-//     };
-// let Tank66 = new Tank(io, Tank66config);

@@ -36,27 +36,40 @@
           return false;
         });
         socket.on('gamestart', function(msg){
-            context.arc(clean.x, clean.y, 6, 0, 2 * Math.PI, false);
-            context.fillStyle = 'red';
-            let m = msg[0].x + ' ' + msg[0].y;
-            clean = msg;
-            console.log(m);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            let centerX = msg[0].x;
-            let centerY = msg[0].y;
-            let radius = 10;
-            context.beginPath();
-            context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-            context.fillStyle = 'green';
-            context.fill();
+            // context.arc(clean.x, clean.y, 6, 0, 2 * Math.PI, false);
+            // context.fillStyle = 'red';
+            // let m = msg[0].x + ' ' + msg[0].y;
+            // clean = msg;
+            // console.log(m);
+            // context.clearRect(0, 0, canvas.width, canvas.height);
+            // let centerX = msg[0].x;
+            // let centerY = msg[0].y;
+            // let radius = 10;
+            // context.beginPath();
+            // context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+            // context.fillStyle = 'green';
+            // context.fill();
 
-            let ccenterX = msg[1].x;
-            let ccenterY = msg[1].y;
-            let rradius = 10;
-            context.beginPath();
-            context.arc(ccenterX, ccenterY, rradius, 0, 2 * Math.PI, false);
-            context.fillStyle = 'blue';
-            context.fill();
+            // let ccenterX = msg[1].x;
+            // let ccenterY = msg[1].y;
+            // let rradius = 10;
+            // context.beginPath();
+            // context.arc(ccenterX, ccenterY, rradius, 0, 2 * Math.PI, false);
+            // context.fillStyle = 'blue';
+            // context.fill();
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            for (let n = 0; n < msg.length; n++ ) {
+              let y = msg[n].position.x;
+              let x = msg[n].position.y;
+              let r = 10;
+              context.beginPath();
+              //context.arc(x, y, r, 0, 2 * Math.PI, false);
+              context.fillStyle = 'red';
+              context.fillRect(x,y,r,r);
+            }
+            console.log(msg);
+
+
 
         });
         

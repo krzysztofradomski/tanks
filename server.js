@@ -34,7 +34,7 @@ io.on('connection', function(socket){
 	// 	on: false
 	// };
 	// let tank1 = new Tank(io, tank1config);
-	game.create();
+	game.init();
 
 	// let tank2config = {
 	// 	name: 'tank2', 
@@ -48,7 +48,9 @@ io.on('connection', function(socket){
 
   	socket.on('gamestart', function(){
   		console.log('started');
-  		game.start();
+  		setTimeout(() => {game.start()},200);
+  		//console.log(game.enemycount);
+  		//console.log(game.enemy1)
   		//tank2.start();
   	});
   	socket.on('gamestop', function(){
@@ -59,7 +61,6 @@ io.on('connection', function(socket){
   	socket.on('gamereset', function(){
   		console.log('resetted');
 	    game.reset();
-	    game.start();
 	    //tank2.reset();
 	    //tank2.start();
   	});
