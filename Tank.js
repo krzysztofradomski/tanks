@@ -15,6 +15,7 @@ module.exports = class Tank {
         this.movementQ = [];
         this.enemysize = 50;
         this.otherTanksPositions = [];
+        this.moveTo;
     }
 
     get info() {
@@ -27,6 +28,7 @@ module.exports = class Tank {
                 origin: this.origin, 
                 position: this.position, 
                 on: this.on, 
+                size: this.enemysize,
                 movementQ: this.movementQ,
                 otherTanksPositions: this.otherTanksPositions
             }
@@ -37,14 +39,14 @@ module.exports = class Tank {
     move() {
          
          if (this.name) {
-            
-            let moveTo = this.generateMovement();
-            this.position[moveTo.axis] = this.position[moveTo.axis] + moveTo.vector;
-            if (this.position.x > this.sandbox.x-this.enemysize) {this.position.x = this.position.x - this.enemysize}
-            if (this.position.y > this.sandbox.y-this.enemysize) {this.position.y = this.sandbox.y - this.enemysize}
-            if (this.position.x < 0) {this.position.x = 0 + this.enemysize};
-            if (this.position.y < 0) {this.position.y = 0 + this.enemysize};
             this.movementQ.splice(0,1);
+            this.moveTo = this.generateMovement();
+            this.position[this.moveTo.axis] = this.position[this.moveTo.axis] + this.moveTo.vector;
+            if (this.position.x > this.sandbox.x-this.enemysize*3/2) {this.position.x = this.position.x - this.enemysize}
+            if (this.position.y > this.sandbox.y-this.enemysize*3/2) {this.position.y = this.position.y - this.enemysize}
+            if (this.position.x < this.enemysize*3/2) {this.position.x = 0 + this.enemysize*3/2};
+            if (this.position.y < this.enemysize*3/2) {this.position.y = 0 + this.enemysize*3/2};
+            
             console.log( this.name, this.movementQ);
         } 
         return `Tank does not exist`;

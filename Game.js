@@ -65,30 +65,15 @@ module.exports = class Game {
         if (this && !this.on) {
             this.on = true;
             this.running = setInterval(() => {      
-      			this.enemies.map((v,i,arr) => { 
-      				//this.collisionDetection();
+      			this.enemies.map((v,i) => { 
+      				this.tanksCollisionDetection(i,v);
       				this[this.enemies[i].name].move();
 	                let pos = this[this.enemies[i].name].position;
 	                console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
 	                this[this.enemies[i].name].position.x % 3 == 0 ? this[this.enemies[i].name].shoot() : ``;
 	                this.enemies[i] = this[this.enemies[i].name].info;
-			        //this.collisionDetection();
-			        this.enemies.map((v2,j,arr) => { 
-      		let i1 = i;
-      		let i2 = j;
-      		//console.log(v1.position);
-      		//console.log(v2.position);
-      		if ((v1.movementQ.length > 1 && v2.movementQ.length > 1) && 
-      			(v1.position.x - v2.position.x < this.enemysize) && 
-      			(v1.position.y - v2.position.y < this.enemysize)) {
-      			v1.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
-      			v2.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
-      			console.log('collision');
-      			return;
+			        //this.tanksCollisionDetection(i,v);
 
-      		}
-
-        });
 	            });
                 this.io.emit('gamestart', this.enemies);
                 
@@ -105,25 +90,29 @@ module.exports = class Game {
         return `Game does not exist`;
     }
 
-      collisionDetection() {
-      	this.enemies.map((v1,i,arr) => { 
+      tanksCollisionDetection(i,v) {
       	this.enemies.map((v2,j,arr) => { 
       		let i1 = i;
       		let i2 = j;
-      		//console.log(v1.position);
-      		//console.log(v2.position);
-      		if ((v1.movementQ.length > 1 && v2.movementQ.length > 1) && 
-      			(v1.position.x - v2.position.x < this.enemysize) && 
-      			(v1.position.y - v2.position.y < this.enemysize)) {
-      			v1.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
-      			v2.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
-      			console.log('collision');
+      		let v1 = v;
+      		var a = v1.position.x - v2.position.x > 0 ? v1.position.x - v2.position.x : v2.position.x - v1.position.x;
+			var b = v1.position.y - v2.position.y;
+			let distance = Math.sqrt(a*a + b*b);
+      		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
+      			distance < this.enemysize &&
+      			v1.name !== v2.name) {
+      			let vector = this[this.enemies[i].name].moveTo.vector > 0 ? this.enemysize : -this.enemysize;
+      			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};
+      			this[this.enemies[i].name].movementQ = [];
+      			this[this.enemies[i].name].movementQ.push(escape,escape,escape,escape,escape);
+      			// let escape2 = {axis: this[this.enemies[j].name].moveTo.axis, vector: -(this[this.enemies[j].name].moveTo.vector)};	      			
+      			// this[this.enemies[j].name].movementQ = [];
+      			// this[this.enemies[j].name].movementQ.push(escape2,escape2,escape2,escape,escape);
+      			console.log('collision distance:');
+      			console.log(distance)
       			return;
-
       		}
-
-        });
-    })
-	}
+		});
+        };
 
 }

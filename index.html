@@ -67,15 +67,16 @@
             // context.fill();
             context.clearRect(0, 0, canvas.width, canvas.height);
             for (let n = 0; n < msg.length; n++ ) {
-              let y = msg[n].position.x;
-              let x = msg[n].position.y;
-              let r = 50;
+              let r = msg[n].size;
+              let y = msg[n].position.x+(r/2);
+              let x = msg[n].position.y+(r/2);   
               context.beginPath();
               //context.arc(x, y, r, 0, 2 * Math.PI, false);
               context.fillStyle = 'red';
               context.fillRect(x,y,r,r);
+              //console.log(msg[n]);
             }
-            console.log(msg);
+            
 
 
 
