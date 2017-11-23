@@ -2,9 +2,9 @@
 <html>
   <head>
     <title>Tanks Online</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }   
-      button { width: 9%; color: white; background-color: blue; border: none; padding: 10px; margin: 10px; }
+    <style> 
+      button {color: white; background-color: blue; padding: 10px; margin: 10px; }
+      button:hover:enabled, button:active:enabled {cursor: pointer;}
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -12,9 +12,9 @@
   <body>
     <canvas id="myCanvas" width="500" height="500" style="border:5px solid blue;"></canvas>
     <br>
-     <button id="start">Start</button>
-     <button id="stop">Stop</button>
-     <button id="reset">Reset</button>
+     <button  type="button" disabled id="start">Start</button>
+     <button  type="button" disabled id="stop">Stop</button>
+     <button  type="button" disabled id="reset">Reset</button>
    
     <script>
       $(function () {
@@ -22,6 +22,7 @@
         let canvas = document.getElementById('myCanvas');
         let context = canvas.getContext('2d');
         let clean = {x:0,y:0};
+
         $('#start').click(function(){
           socket.emit('gamestart');
           return false;
@@ -35,6 +36,13 @@
           socket.emit('gamereset');
           return false;
         });
+
+        socket.on('ready', function(){
+          $("#start").attr("disabled", false);
+          $("#stop").attr("disabled", false);
+          $("#reset").attr("disabled", false);
+        });
+
         socket.on('gamestart', function(msg){
             // context.arc(clean.x, clean.y, 6, 0, 2 * Math.PI, false);
             // context.fillStyle = 'red';
@@ -61,7 +69,7 @@
             for (let n = 0; n < msg.length; n++ ) {
               let y = msg[n].position.x;
               let x = msg[n].position.y;
-              let r = 10;
+              let r = 50;
               context.beginPath();
               //context.arc(x, y, r, 0, 2 * Math.PI, false);
               context.fillStyle = 'red';

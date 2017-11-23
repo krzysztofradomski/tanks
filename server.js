@@ -66,7 +66,7 @@ io.on('connection', function(socket){
   	});
   	socket.on('disconnect', function(){
 	    console.log('a user disconnected');
-	    game.reset();
+	    delete game;
 	    //tank2.reset();   
   	});
 });

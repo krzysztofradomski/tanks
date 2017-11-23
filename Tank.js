@@ -13,7 +13,7 @@ module.exports = class Tank {
         this.on ? this.start() : ``;
         this.sandbox = { x: 500, y: 500 };
         this.movementQ = [];
-        this.enemysize = 10;
+        this.enemysize = 50;
         this.otherTanksPositions = [];
     }
 
@@ -35,18 +35,16 @@ module.exports = class Tank {
     }
 
     move() {
-         if (this.movementQ.length < 5)
-         {
-            this.generateMovement();
-         }
+         
          if (this.name) {
-            this.movementQ.splice(0,1);
+            
             let moveTo = this.generateMovement();
             this.position[moveTo.axis] = this.position[moveTo.axis] + moveTo.vector;
             if (this.position.x > this.sandbox.x-this.enemysize) {this.position.x = this.position.x - this.enemysize}
             if (this.position.y > this.sandbox.y-this.enemysize) {this.position.y = this.sandbox.y - this.enemysize}
-            if (this.position.x < 0) {this.position.x = 0 + this.enemysize}
-            if (this.position.y < 0) {this.position.y = 0 + this.enemysize}  
+            if (this.position.x < 0) {this.position.x = 0 + this.enemysize};
+            if (this.position.y < 0) {this.position.y = 0 + this.enemysize};
+            this.movementQ.splice(0,1);
             console.log( this.name, this.movementQ);
         } 
         return `Tank does not exist`;
@@ -59,12 +57,12 @@ module.exports = class Tank {
 
             switch (true) {
                 case Date.now() % 2 === 0:
-                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'x', vector: this.speed} : moveNow = {axis: 'y', vector: -this.speed}
+                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'x', vector: this.speed} : moveNow = {axis: 'y', vector: -this.speed};
                     console.log('date')
                     break;
                 default:
                     console.log('default')
-                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'y', vector: this.speed} : moveNow = {axis: 'x', vector: -this.speed}
+                    parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'y', vector: this.speed} : moveNow = {axis: 'x', vector: -this.speed};
              } 
              
         } else if (0 >= this.position.x && this.position.y + this.speed >= this.sandbox.y) {
@@ -89,12 +87,20 @@ module.exports = class Tank {
             console.log('moveNow: ' + moveNow.axis + ' ' + moveNow.vector)
             this.movementQ.push(moveNow);
         } 
-        if ( Date.now() % 5 === 0) {
+        if ( Date.now() % 5 === 0 && this.movementQ.length < 10) {
             let moves = parseInt(Math.random() *10);
             for (let i = 0; i < moves ; i++) {
                 this.movementQ.push(moveNow)
             }   
         }
+        // if (this.movementQ.length < 5)
+        //  {
+        //     this.generateMovement();
+        //  }
+         if (this.movementQ.length > 15)
+         {
+            this.movementQ = this.movementQ.splice(0,15);
+         }
        return this.movementQ.length > 1 ? this.movementQ[this.movementQ.length-1] : this.generateMovement();
     } 
 

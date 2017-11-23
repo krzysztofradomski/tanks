@@ -4,9 +4,9 @@ let Player = require('./Player.js');
 module.exports = class Game {
     constructor(io) {
         this.io = io;
-        this.enemysize = 10;
+        this.enemysize = 50;
         this.on = false;
-        this.speed = 100;
+        this.speed = 1000 / 25;
         this.running;
         this.enemies = [];
         this.enemycount = 0;
@@ -19,6 +19,7 @@ module.exports = class Game {
     	this.enemycount = 0;
         this.enemies = [];
     	this.createEnemies();
+    	this.io.emit('ready');
 
     }
     createEnemies() {
@@ -33,7 +34,7 @@ module.exports = class Game {
 	    		name: enemyName,
 	    		level: 1,
 	    		lives: 1,
-	    		speed: parseInt(Math.random() * 10 + 1),
+	    		speed: parseInt(Math.random() * 5 + 1),
 	    		origin: {x: x, y: y},
 	    		position: {x: x, y: y},
 	    		on: false
@@ -65,16 +66,33 @@ module.exports = class Game {
             this.on = true;
             this.running = setInterval(() => {      
       			this.enemies.map((v,i,arr) => { 
+      				//this.collisionDetection();
       				this[this.enemies[i].name].move();
 	                let pos = this[this.enemies[i].name].position;
 	                console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
 	                this[this.enemies[i].name].position.x % 3 == 0 ? this[this.enemies[i].name].shoot() : ``;
 	                this.enemies[i] = this[this.enemies[i].name].info;
-	                this[this.enemies[i].name].otherTanksPositions = this.enemies[i];
+			        //this.collisionDetection();
+			        this.enemies.map((v2,j,arr) => { 
+      		let i1 = i;
+      		let i2 = j;
+      		//console.log(v1.position);
+      		//console.log(v2.position);
+      		if ((v1.movementQ.length > 1 && v2.movementQ.length > 1) && 
+      			(v1.position.x - v2.position.x < this.enemysize) && 
+      			(v1.position.y - v2.position.y < this.enemysize)) {
+      			v1.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
+      			v2.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
+      			console.log('collision');
+      			return;
+
+      		}
+
+        });
 	            });
                 this.io.emit('gamestart', this.enemies);
                 
-            }, 100)
+            }, this.speed)
         }
     }
 
@@ -88,6 +106,24 @@ module.exports = class Game {
     }
 
       collisionDetection() {
-    }
+      	this.enemies.map((v1,i,arr) => { 
+      	this.enemies.map((v2,j,arr) => { 
+      		let i1 = i;
+      		let i2 = j;
+      		//console.log(v1.position);
+      		//console.log(v2.position);
+      		if ((v1.movementQ.length > 1 && v2.movementQ.length > 1) && 
+      			(v1.position.x - v2.position.x < this.enemysize) && 
+      			(v1.position.y - v2.position.y < this.enemysize)) {
+      			v1.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
+      			v2.movementQ[0] = {axis: v1.movementQ[0].axis, vector: -v1.movementQ[0].vector}
+      			console.log('collision');
+      			return;
+
+      		}
+
+        });
+    })
+	}
 
 }
