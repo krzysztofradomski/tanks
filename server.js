@@ -7,6 +7,7 @@ let port = process.env.PORT || 3000;
 // let serviceAccount = require("./key.json");
 let Game = require('./Game.js')
 let Tank = require('./Tank.js')
+let Player = require('./Player.js')
 
 // admin.initializeApp({
 //     credential: admin.credential.cert(serviceAccount),
@@ -69,6 +70,11 @@ io.on('connection', function(socket){
 	    game.stop();
 	    game = null;
 	    //tank2.reset();   
+  	});
+
+  	socket.on('keypressed', function(key){
+  		console.log(key);
+  		game.Player1.move(key);
   	});
 });
 

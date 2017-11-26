@@ -1,18 +1,15 @@
-let Tank = require('./Tank.js');
-module.exports = class Player extends Tank {
+module.exports = class Player {
 
-    constructor(io, config, name) {
-       super();
-        this.name = name;
+    constructor(io, config) {
+        this.name = config.name;
         this.level = config.level;
         this.lives = config.lives;
         this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
-        this.position = config.position;    
-        this.on = config.on;      
+        this.position = config.position;      
         ///this.running;
         this.sandbox = { x: 500, y: 500 };
-        this.playerSize = 10;
+        this.playerSize = 50;
     }
 
     get info() {
@@ -22,7 +19,25 @@ module.exports = class Player extends Tank {
         return `Player does not exist`;
     }
 
-    move() {
+    move(key) {
+        switch (key) {
+            case 'w':
+                this.position.y -= 10;
+                break;
+            case 's':
+                this.position.y += 10;
+                break;
+            case 'a':
+                this.position.x -= 10;
+                break;
+            case 'd':
+                this.position.x += 10;
+                break;
+            default:
+                this.position.x += 0;
+                this.position.y += 0;
+
+        }
  
     }
 

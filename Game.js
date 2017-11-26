@@ -1,10 +1,12 @@
 let Tank = require('./Tank.js');
 let Player = require('./Player.js');
+let ObstacleSets = require('./ObstacleSets.js');
 
 module.exports = class Game {
     constructor(io) {
         this.io = io;
         this.enemysize = 50;
+        this.obstaclesize = 50;
         this.on = false;
         this.speed = 1000 / 25;
         this.running;
@@ -12,16 +14,42 @@ module.exports = class Game {
         this.enemycount = 0;
         this.enemiesLimit = 5;
         this.sandbox = { x: 500, y: 500 };
-
+        this.obstacles = [];
+        this.Player1 = null;
     };
 
     init() {
     	this.enemycount = 0;
         this.enemies = [];
+        this.obstacles = [];
+        this.createObstacles();
     	this.createEnemies();
     	this.io.emit('ready');
 
+    	let playerConfig =  {
+	    		name: 'A',
+	    		level: 1,
+	    		lives: 1,
+	    		speed: 5,
+	    		origin: {x: 250, y: 480},
+	    		position: {x: 250, y: 480}
+	    	}
+    	this.Player1 = new Player(this.io, playerConfig);
     }
+
+    createObstacles() {
+    	// this.obstacles = [];
+    	// for (let count = 0; count < this.enemiesLimit; count++) {
+    	// 	this.obstacles.push({
+    	// 		size: this.enemysize,
+    	// 		x: parseInt(Math.random() * (this.sandbox.x-this.enemysize)),
+    	// 		y: parseInt(Math.random() * (this.sandbox.x-this.enemysize))
+    	// 	})
+    	// }
+    	this.obstacles = ObstacleSets.sets[parseInt(Math.random() * ObstacleSets.sets.length)];
+    	
+    }
+
     createEnemies() {
     	this.enemycount = 0;
         this.enemies = [];
@@ -34,7 +62,7 @@ module.exports = class Game {
 	    		name: enemyName,
 	    		level: 1,
 	    		lives: 1,
-	    		speed: parseInt(Math.random() * 5 + 1),
+	    		speed: 5,
 	    		origin: {x: x, y: y},
 	    		position: {x: x, y: y},
 	    		on: false
@@ -53,6 +81,7 @@ module.exports = class Game {
             this.on = false;
             this.enemycount = 0;
             this.enemies = [];
+            this.obstacles = [];
             clearInterval(this.running);
             this.init();
             setTimeout(() => {this.start()},500);
@@ -65,8 +94,10 @@ module.exports = class Game {
         if (this && !this.on) {
             this.on = true;
             this.running = setInterval(() => {      
-      			this.enemies.map((v,i) => { 
+      			this.enemies.map((v,i) => {
+      				
       				this.tanksCollisionDetection(i,v);
+      				//this.obstaclesCollisionDetection(i,v);
       				this[this.enemies[i].name].move();
 	                let pos = this[this.enemies[i].name].position;
 	                console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
@@ -75,7 +106,8 @@ module.exports = class Game {
 			        //this.tanksCollisionDetection(i,v);
 
 	            });
-                this.io.emit('gamestart', this.enemies);
+                this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, player1: this.Player1});
+                //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
             }, this.speed)
         }
@@ -101,14 +133,42 @@ module.exports = class Game {
       		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
       			distance < this.enemysize &&
       			v1.name !== v2.name) {
-      			let vector = this[this.enemies[i].name].moveTo.vector > 0 ? this.enemysize : -this.enemysize;
+      			let vector = this[this.enemies[i].name].moveTo.vector > v2.position.x ? this.enemysize : -this.enemysize;
       			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};
       			this[this.enemies[i].name].movementQ = [];
-      			this[this.enemies[i].name].movementQ.push(escape,escape,escape,escape,escape);
+      			this[this.enemies[i].name].movementQ.push(escape);
       			// let escape2 = {axis: this[this.enemies[j].name].moveTo.axis, vector: -(this[this.enemies[j].name].moveTo.vector)};	      			
       			// this[this.enemies[j].name].movementQ = [];
       			// this[this.enemies[j].name].movementQ.push(escape2,escape2,escape2,escape,escape);
       			console.log('collision distance:');
+      			console.log(distance)
+      			return;
+      		}
+		});
+        };
+
+        obstaclesCollisionDetection(i,v) {
+      	this.obstacles.map((v2,j,arr) => { 
+      		let i1 = i;
+      		let i2 = j;
+      		let v1 = v;
+      		var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
+			var b = v1.position.y - v2.y;
+			let distance = Math.sqrt(a*a + b*b);
+      		if (v.movementQ.length > 0 && 
+      			distance < this.enemysize) {
+      			this[this.enemies[i].name].movementQ = [];
+      			let vector1 = this[this.enemies[i].name].position.x+this.enemysize < v2.x ? -this.enemysize/2 : this.enemysize/2;
+      			let vector2 = this[this.enemies[i].name].position.y+this.enemysize > v2.y ? -this.enemysize/2 : this.enemysize/2;
+      			let escape1 = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector1};
+      			//let escape2 = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector2};
+      			// this[this.enemies[i].name].movementQ = [];
+      			// let escape = {
+      			// 	axis: this[this.enemies[i].name].moveTo.axis, 
+      			// 	vector: -(this[this.enemies[i].name].moveTo.vector)
+      			// }
+      			this[this.enemies[i].name].movementQ.push(escape1);
+      			console.log('obstacle collision distance:');
       			console.log(distance)
       			return;
       		}
