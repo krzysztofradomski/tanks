@@ -89,7 +89,7 @@ module.exports = class Tank {
              moveNow = {axis: 'y', vector: -this.speed}
             } else {moveNow = {axis: 'x', vector: 0}}
         if (this.movementQ.length < this.speed) {
-            console.log('moveNow: ' + moveNow.axis + ' ' + moveNow.vector)
+            //console.log('moveNow: ' + moveNow.axis + ' ' + moveNow.vector)
             this.movementQ.push(moveNow);
         } 
         if ( this.movementQ.length < 15) {

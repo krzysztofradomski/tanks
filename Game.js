@@ -169,7 +169,7 @@ module.exports = class Game {
 			let b = v1.position.y - v2.position.y;
 			let distance = Math.sqrt(a*a + b*b);
       		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
-      			distance < this.enemysize &&
+      			distance < this.drawsize &&
       			v1.name !== v2.name) {
       			let vector = this[this.enemies[i].name].moveTo.vector > v2.position.x ? this.enemysize : -this.enemysize;
       			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};

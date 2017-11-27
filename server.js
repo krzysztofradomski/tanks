@@ -27,7 +27,7 @@ let game = new Game(io);
 	game.init();
 
 io.on('connection', function(socket){
-	console.log('a user connected');
+	console.log('A user connected.');
 	game.io.emit('ready');
 	let player = game.createPlayer();
 
