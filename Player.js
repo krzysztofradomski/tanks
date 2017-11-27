@@ -24,20 +24,15 @@ module.exports = class Player {
         switch (key) {
             case 'w', 'ArrowUp':
                 this.position.y -= 10;
-                 //if (this.position.y < this.playersize*3/2) { console.log('out', this.position);this.position.y = 0};
-
                 break;
             case 's', 'ArrowDown':
                 this.position.y += 10;
-                //if (this.position.y > this.sandbox.y-this.playersize*3/2) { console.log('out', this.position);this.position.y = this.position.y};
-                break;
+                 break;
             case 'a', 'ArrowLeft':
                 this.position.x -= 10;
-                //if (this.position.x < this.playersize*3/2) { console.log('out', this.position);this.position.x = 0};
                 break;
             case 'd', 'ArrowRight':
                 this.position.x += 10;
-                  //if (this.position.x > this.sandbox.x-this.playersize*3/2) { console.log('out', this.position);this.position.x = this.position.x};
                 break;
             default:
                 this.position.x += 0;
@@ -49,8 +44,7 @@ module.exports = class Player {
         if (this.position.y < 0) {this.position.y = 0};
     }
 
-    generateMovement() {   
-        
+    generateMovement() {         
     } 
 
     reset() {

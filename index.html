@@ -53,57 +53,41 @@
         });
 
         socket.on('gamestart', function(gamestate){
-            console.log(gamestate);
-            // context.arc(clean.x, clean.y, 6, 0, 2 * Math.PI, false);
-            // context.fillStyle = 'red';
-            // let m = gamestate.enemies[0].x + ' ' + gamestate.enemies[0].y;
-            // clean = gamestate.enemies;
-            // console.log(m);
-            // context.clearRect(0, 0, canvas.width, canvas.height);
-            // let centerX = gamestate.enemies[0].x;
-            // let centerY = gamestate.enemies[0].y;
-            // let radius = 10;
-            // context.beginPath();
-            // context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-            // context.fillStyle = 'green';
-            // context.fill();
+            //console.log(gamestate);
 
-            // let ccenterX = gamestate.enemies[1].x;
-            // let ccenterY = gamestate.enemies[1].y;
-            // let rradius = 10;
-            // context.beginPath();
-            // context.arc(ccenterX, ccenterY, rradius, 0, 2 * Math.PI, false);
-            // context.fillStyle = 'blue';
-            // context.fill();
             context.clearRect(0, 0, canvas.width, canvas.height);
+
             for (let n = 0; n < gamestate.enemies.length; n++ ) {
               let r = gamestate.enemies[n].drawsize;
               let x = gamestate.enemies[n].position.x;
               let y = gamestate.enemies[n].position.y;   
               context.beginPath();
-              //context.arc(x, y, r, 0, 2 * Math.PI);
               context.fillStyle = 'red';
               context.fillRect(x,y,r,r);
-              //console.log(gamestate.enemies[n]);
             }
+
             for (let n = 0; n < gamestate.obstacles.length; n++ ) {
-              let r = gamestate.obstacles[n].size/2;
+              let r = gamestate.obstacles[n].size;
               let x = gamestate.obstacles[n].x;
               let y = gamestate.obstacles[n].y;   
               context.beginPath();
-              //context.arc(x, y, r, 0, 2 * Math.PI);
               context.fillStyle = 'white';
               context.fillRect(x,y,r,r);
-              //console.log(gamestate.enemies[n]);
             }
 
-            let player1Size = 50;
-            let player1X = gamestate.player1.position.x;
-            let player1Y = gamestate.player1.position.y;  
-            context.beginPath();
-            //context.arc(x, y, r, 0, 2 * Math.PI);
+            let playerASize = gamestate.playerA.drawsize
+            let playerAX = gamestate.playerA.position.x;
+            let playerAY = gamestate.playerA.position.y;  
+            context.beginPath();  
             context.fillStyle = 'green';
-            context.fillRect(player1X,player1Y,player1Size/2,player1Size/2);
+            context.fillRect(playerAX,playerAY,playerASize,playerASize);
+
+            let playerBSize = gamestate.playerB.drawsize
+            let playerBX = gamestate.playerB.position.x;
+            let playerBY = gamestate.playerB.position.y;  
+            context.beginPath();  
+            context.fillStyle = 'blue';
+            context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
             
 
 

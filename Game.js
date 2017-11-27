@@ -7,7 +7,7 @@ module.exports = class Game {
         this.io = io;
         this.enemysize = 50;
         this.drawsize = 25;
-        this.obstaclesize = 50;
+        this.obstaclesize = 25;
         this.on = false;
         this.speed = 1000 / 25;
         this.running;
@@ -16,37 +16,46 @@ module.exports = class Game {
         this.enemiesLimit = 5;
         this.sandbox = { x: 500, y: 500 };
         this.obstacles = [];
-        this.Player1 = null;
+        this.PlayerA = null;
+        this.PlayerB = null;
     };
 
     init() {
     	this.enemycount = 0;
-        this.enemies = [];
-        this.obstacles = [];
         this.createObstacles();
     	this.createEnemies();
-    	this.io.emit('ready');
+    	//this.io.emit('ready');
+    }
 
-    	let playerConfig =  {
-	    		name: 'A',
+    createPlayer() {
+    	let playerAConfig =  {
+	    		name: 'PlayerA',
 	    		level: 1,
 	    		lives: 1,
 	    		speed: 5,
 	    		origin: {x: 250, y: 480},
-	    		position: {x: 250, y: 480}
-	    	}
-    	this.Player1 = new Player(this.io, playerConfig);
+	    		position: {x: 50, y: 480}
+	    }
+	    let playerBConfig =  {
+	    		name: 'PlayerB',
+	    		level: 1,
+	    		lives: 1,
+	    		speed: 5,
+	    		origin: {x: 250, y: 480},
+	    		position: {x: 450, y: 480}
+	    }
+	    if (!this.PlayerA) {
+	    	this.PlayerA = new Player(this.io, playerAConfig);
+	    	return this.PlayerA;
+	    } else if (!this.PlayerB) {
+	    	this.PlayerB = new Player(this.io, playerBConfig);
+	    	return this.PlayerB;
+	    } else {return "Player limit"}
     }
 
     createObstacles() {
-    	// this.obstacles = [];
-    	// for (let count = 0; count < this.enemiesLimit; count++) {
-    	// 	this.obstacles.push({
-    	// 		size: this.enemysize,
-    	// 		x: parseInt(Math.random() * (this.sandbox.x-this.enemysize)),
-    	// 		y: parseInt(Math.random() * (this.sandbox.x-this.enemysize))
-    	// 	})
-    	// }
+    	this.obstacles = [];
+    	//this.obstaclesGenerator();
     	this.obstacles = ObstacleSets.sets[parseInt(Math.random() * ObstacleSets.sets.length)];
     	
     }
@@ -75,6 +84,30 @@ module.exports = class Game {
 	    	console.log(this.enemies);
 	    	console.log('enemies number = ');
 	    	console.log(this.enemies.length);
+    }
+
+    obstaclesGenerator() {
+    	for (let count = 0; count < this.enemiesLimit; count++) {
+    		let x = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
+    		let y = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
+    		for (let times = 0; times < 3; times++) {
+    			x = x + this.obstaclesize
+    			this.obstacles.push({
+	    			size: this.obstaclesize,
+	    			x: x,
+	    			y: y
+    			})
+    		};
+    		x = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
+    		for (let times = 0; times < 3; times++) {
+    			y = y - this.obstaclesize
+    			this.obstacles.push({
+	    			size: this.obstaclesize,
+	    			x: x,
+	    			y: y
+    			})
+    		} 	
+    	}
     }
 
     reset() {
@@ -106,7 +139,7 @@ module.exports = class Game {
 	                this.enemies[i] = this[this.enemies[i].name].info;
 
 	            });
-                this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, player1: this.Player1});
+                this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB});
                 //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
             }, this.speed)

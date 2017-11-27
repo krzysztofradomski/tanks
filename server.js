@@ -22,32 +22,18 @@ app.get('/', function(req, res){
   	res.sendFile(__dirname + '/index.html');
 });
 
+let game = new Game(io);
+
+	game.init();
 
 io.on('connection', function(socket){
 	console.log('a user connected');
-	let game = new Game(io);
-	// let tank1config = {
-	// 	name: 'tank1', 
-	// 	level: 1, 
-	// 	speed: 10,
-	// 	origin: { x: 250, y: 250 },
-	// 	position: { x: 250, y: 250 },
-	// 	on: false
-	// };
-	// let tank1 = new Tank(io, tank1config);
-	game.init();
-
-	// let tank2config = {
-	// 	name: 'tank2', 
-	// 	level: 1, 
-	// 	speed: 20,
-	// 	origin: { x: 150, y: 150 },
-	// 	position: { x: 150, y: 150 },
-	// 	on: false
-	// };
-	// let tank2 = new Tank(io, tank2config);
+	game.io.emit('ready');
+	let player = game.createPlayer();
+	console.log(player.name + ' connected.');
 
   	socket.on('gamestart', function(){
+  		
   		console.log('started');
   		setTimeout(() => {game.start()},200);
   		//console.log(game.enemycount);
@@ -74,7 +60,7 @@ io.on('connection', function(socket){
 
   	socket.on('keypressed', function(key){
   		//console.log(key);
-  		game.Player1.move(key);
+  		player.move(key);
   	});
 });
 
