@@ -73,7 +73,7 @@ io.on('connection', function(socket){
   	});
 
   	socket.on('keypressed', function(key){
-  		console.log(key);
+  		//console.log(key);
   		game.Player1.move(key);
   	});
 });
@@ -81,4 +81,5 @@ io.on('connection', function(socket){
 http.listen(port, function(){
   	console.log('listening on *:' + port);
 });
+
 

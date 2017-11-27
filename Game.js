@@ -6,6 +6,7 @@ module.exports = class Game {
     constructor(io) {
         this.io = io;
         this.enemysize = 50;
+        this.drawsize = 25;
         this.obstaclesize = 50;
         this.on = false;
         this.speed = 1000 / 25;
@@ -95,15 +96,14 @@ module.exports = class Game {
             this.on = true;
             this.running = setInterval(() => {      
       			this.enemies.map((v,i) => {
-      				
-      				this.tanksCollisionDetection(i,v);
-      				//this.obstaclesCollisionDetection(i,v);
       				this[this.enemies[i].name].move();
+      				this.tanksCollisionDetection(i,v);
+      				this.obstaclesCollisionDetection(i,v);
+      				
 	                let pos = this[this.enemies[i].name].position;
-	                console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
-	                this[this.enemies[i].name].position.x % 3 == 0 ? this[this.enemies[i].name].shoot() : ``;
+	                //console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
+	                //this[this.enemies[i].name].position.x % 3 == 0 ? this[this.enemies[i].name].shoot() : ``;
 	                this.enemies[i] = this[this.enemies[i].name].info;
-			        //this.tanksCollisionDetection(i,v);
 
 	            });
                 this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, player1: this.Player1});
@@ -156,18 +156,21 @@ module.exports = class Game {
 			var b = v1.position.y - v2.y;
 			let distance = Math.sqrt(a*a + b*b);
       		if (v.movementQ.length > 0 && 
-      			distance < this.enemysize) {
-      			this[this.enemies[i].name].movementQ = [];
-      			let vector1 = this[this.enemies[i].name].position.x+this.enemysize < v2.x ? -this.enemysize/2 : this.enemysize/2;
-      			let vector2 = this[this.enemies[i].name].position.y+this.enemysize > v2.y ? -this.enemysize/2 : this.enemysize/2;
-      			let escape1 = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector1};
-      			//let escape2 = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector2};
-      			// this[this.enemies[i].name].movementQ = [];
-      			// let escape = {
-      			// 	axis: this[this.enemies[i].name].moveTo.axis, 
-      			// 	vector: -(this[this.enemies[i].name].moveTo.vector)
-      			// }
-      			this[this.enemies[i].name].movementQ.push(escape1);
+      			distance < this.drawsize) {
+
+      			if (this[this.enemies[i].name].position.x > v2.x) { //po prawej
+      				this[this.enemies[i].name].position.x += v2.x+this.drawsize - this[this.enemies[i].name].position.x
+      			};
+		        if (this[this.enemies[i].name].position.y > v2.y) { //u dolu
+		        	this[this.enemies[i].name].position.y += v2.y+this.drawsize - this[this.enemies[i].name].position.y
+		        };
+		        if (this[this.enemies[i].name].position.x < v2.x) { //po lewej
+		        	this[this.enemies[i].name].position.x -= v2.x - this[this.enemies[i].name].position.x;
+		        };
+		        if (this[this.enemies[i].name].position.y < v2.y) { //u gory
+		        	this[this.enemies[i].name].position.y -= v2.y - this[this.enemies[i].name].position.y;
+		        };
+
       			console.log('obstacle collision distance:');
       			console.log(distance)
       			return;

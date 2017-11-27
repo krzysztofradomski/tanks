@@ -14,6 +14,7 @@ module.exports = class Tank {
         this.sandbox = { x: 500, y: 500 };
         this.movementQ = [];
         this.enemysize = 50;
+        this.drawsize = 25;
         this.otherTanksPositions = [];
         this.moveTo;
     }
@@ -28,7 +29,8 @@ module.exports = class Tank {
                 origin: this.origin, 
                 position: this.position, 
                 on: this.on, 
-                size: this.enemysize,
+                enemysize: this.enemysize,
+                drawsize: this.drawsize,
                 movementQ: this.movementQ,
                 otherTanksPositions: this.otherTanksPositions
             }
@@ -43,10 +45,10 @@ module.exports = class Tank {
             this.generateMovement();
             this.moveTo = this.movementQ[0];
             this.position[this.moveTo.axis] = this.position[this.moveTo.axis] + this.moveTo.vector;
-            if (this.position.x > this.sandbox.x-this.enemysize*3/2) {this.position.x = this.position.x - this.enemysize}
-            if (this.position.y > this.sandbox.y-this.enemysize*3/2) {this.position.y = this.position.y - this.enemysize}
-            if (this.position.x < this.enemysize*3/2) {this.position.x = 0 + this.enemysize*3/2};
-            if (this.position.y < this.enemysize*3/2) {this.position.y = 0 + this.enemysize*3/2};
+            if (this.position.x > this.sandbox.x-this.drawsize) {this.position.x = this.position.x - this.drawsize}
+            if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.position.y - this.drawsize}
+            if (this.position.x < 0) {this.position.x = 0};
+            if (this.position.y < 0) {this.position.y = 0};
             
             //console.log( this.name, this.movementQ);
         } 
@@ -61,10 +63,10 @@ module.exports = class Tank {
             switch (true) {
                 case Date.now() % 2 === 0:
                     parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'x', vector: this.speed} : moveNow = {axis: 'y', vector: -this.speed};
-                    console.log('date')
+                    //console.log('date')
                     break;
                 default:
-                    console.log('default')
+                    //console.log('default')
                     parseInt((Math.random()) * 2) === 0 ? moveNow = {axis: 'y', vector: this.speed} : moveNow = {axis: 'x', vector: -this.speed};
              } 
              
@@ -127,7 +129,7 @@ module.exports = class Tank {
                 this.move();
                 let pos = this.position;
                 console.log(`A ${this.name} moved to ${this.position.x}:${this.position.y}.`);
-                this.position.x % 3 == 0 ? this.shoot() : ``;
+                //this.position.x % 3 == 0 ? this.shoot() : ``;
                 this.io.emit('tankstart', pos);
             }, this.speed)
 

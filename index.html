@@ -27,7 +27,7 @@
         let context = canvas.getContext('2d');
         let clean = {x:0,y:0};
 
-        document.onkeypress = function (e) {
+        document.onkeydown = function (e) {
             e = e || window.event;
             socket.emit('keypressed', e.key)
         };
@@ -77,7 +77,7 @@
             // context.fill();
             context.clearRect(0, 0, canvas.width, canvas.height);
             for (let n = 0; n < gamestate.enemies.length; n++ ) {
-              let r = gamestate.enemies[n].size/2;
+              let r = gamestate.enemies[n].drawsize;
               let x = gamestate.enemies[n].position.x;
               let y = gamestate.enemies[n].position.y;   
               context.beginPath();
