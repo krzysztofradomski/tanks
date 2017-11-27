@@ -74,20 +74,22 @@
               context.fillStyle = 'white';
               context.fillRect(x,y,r,r);
             }
+            if (!!gamestate.playerB) {
+              let playerASize = gamestate.playerA.drawsize
+              let playerAX = gamestate.playerA.position.x;
+              let playerAY = gamestate.playerA.position.y;  
+              context.beginPath();  
+              context.fillStyle = 'green';
+              context.fillRect(playerAX,playerAY,playerASize,playerASize);
 
-            let playerASize = gamestate.playerA.drawsize
-            let playerAX = gamestate.playerA.position.x;
-            let playerAY = gamestate.playerA.position.y;  
-            context.beginPath();  
-            context.fillStyle = 'green';
-            context.fillRect(playerAX,playerAY,playerASize,playerASize);
-
-            let playerBSize = gamestate.playerB.drawsize
-            let playerBX = gamestate.playerB.position.x;
-            let playerBY = gamestate.playerB.position.y;  
-            context.beginPath();  
-            context.fillStyle = 'blue';
-            context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
+              let playerBSize = gamestate.playerB.drawsize
+              let playerBX = gamestate.playerB.position.x;
+              let playerBY = gamestate.playerB.position.y;  
+              context.beginPath();  
+              context.fillStyle = 'blue';
+              context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
+            }
+           
             
 
 

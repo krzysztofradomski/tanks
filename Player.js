@@ -1,6 +1,6 @@
 module.exports = class Player {
 
-    constructor(io, config) {
+    constructor(io, config, obstacles) {
         this.name = config.name;
         this.level = config.level;
         this.lives = config.lives;
@@ -11,6 +11,7 @@ module.exports = class Player {
         this.sandbox = { x: 500, y: 500 };
         this.playersize = 50;
         this.drawsize = 25;
+        this.obstacles = obstacles;
     }
 
     get info() {
@@ -77,9 +78,36 @@ module.exports = class Player {
         return `Player does not exist`;
     }
 
-    collisionDetection() {
+    obstaclesCollisionDetection() {
+        this.obstacles.map((v2,j,arr) => { 
+            let i1 = i;
+            let i2 = j;
+            let v1 = v;
+            var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
+            var b = v1.position.y - v2.y;
+            let distance = Math.sqrt(a*a + b*b);
+            if (v.movementQ.length > 0 && 
+                distance < this.drawsize) {
 
-    }
+                if (this[this.enemies[i].name].position.x > v2.x) { //po prawej
+                    this[this.enemies[i].name].position.x += v2.x+this.drawsize - this[this.enemies[i].name].position.x
+                };
+                if (this[this.enemies[i].name].position.y > v2.y) { //u dolu
+                    this[this.enemies[i].name].position.y += v2.y+this.drawsize - this[this.enemies[i].name].position.y
+                };
+                if (this[this.enemies[i].name].position.x < v2.x) { //po lewej
+                    this[this.enemies[i].name].position.x -= v2.x - this[this.enemies[i].name].position.x;
+                };
+                if (this[this.enemies[i].name].position.y < v2.y) { //u gory
+                    this[this.enemies[i].name].position.y -= v2.y - this[this.enemies[i].name].position.y;
+                };
+
+                console.log('obstacle collision distance:');
+                console.log(distance)
+                return;
+            }
+        });
+    };
 
     kill() {
        

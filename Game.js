@@ -45,10 +45,10 @@ module.exports = class Game {
 	    		position: {x: 450, y: 480}
 	    }
 	    if (!this.PlayerA) {
-	    	this.PlayerA = new Player(this.io, playerAConfig);
+	    	this.PlayerA = new Player(this.io, playerAConfig, this.obstacles);
 	    	return this.PlayerA;
 	    } else if (!this.PlayerB) {
-	    	this.PlayerB = new Player(this.io, playerBConfig);
+	    	this.PlayerB = new Player(this.io, playerBConfig, this.obstacles);
 	    	return this.PlayerB;
 	    } else {return "Player limit"}
     }
@@ -181,34 +181,34 @@ module.exports = class Game {
         };
 
         obstaclesCollisionDetection(i,v) {
-      	this.obstacles.map((v2,j,arr) => { 
-      		let i1 = i;
-      		let i2 = j;
-      		let v1 = v;
-      		var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
-			var b = v1.position.y - v2.y;
-			let distance = Math.sqrt(a*a + b*b);
-      		if (v.movementQ.length > 0 && 
-      			distance < this.drawsize) {
+	      	this.obstacles.map((v2,j,arr) => { 
+	      		let i1 = i;
+	      		let i2 = j;
+	      		let v1 = v;
+	      		var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
+				var b = v1.position.y - v2.y;
+				let distance = Math.sqrt(a*a + b*b);
+	      		if (v.movementQ.length > 0 && 
+	      			distance < this.drawsize) {
 
-      			if (this[this.enemies[i].name].position.x > v2.x) { //po prawej
-      				this[this.enemies[i].name].position.x += v2.x+this.drawsize - this[this.enemies[i].name].position.x
-      			};
-		        if (this[this.enemies[i].name].position.y > v2.y) { //u dolu
-		        	this[this.enemies[i].name].position.y += v2.y+this.drawsize - this[this.enemies[i].name].position.y
-		        };
-		        if (this[this.enemies[i].name].position.x < v2.x) { //po lewej
-		        	this[this.enemies[i].name].position.x -= v2.x - this[this.enemies[i].name].position.x;
-		        };
-		        if (this[this.enemies[i].name].position.y < v2.y) { //u gory
-		        	this[this.enemies[i].name].position.y -= v2.y - this[this.enemies[i].name].position.y;
-		        };
+	      			if (this[this.enemies[i].name].position.x > v2.x) { //po prawej
+	      				this[this.enemies[i].name].position.x += v2.x+this.drawsize - this[this.enemies[i].name].position.x
+	      			};
+			        if (this[this.enemies[i].name].position.y > v2.y) { //u dolu
+			        	this[this.enemies[i].name].position.y += v2.y+this.drawsize - this[this.enemies[i].name].position.y
+			        };
+			        if (this[this.enemies[i].name].position.x < v2.x) { //po lewej
+			        	this[this.enemies[i].name].position.x -= v2.x - this[this.enemies[i].name].position.x;
+			        };
+			        if (this[this.enemies[i].name].position.y < v2.y) { //u gory
+			        	this[this.enemies[i].name].position.y -= v2.y - this[this.enemies[i].name].position.y;
+			        };
 
-      			console.log('obstacle collision distance:');
-      			console.log(distance)
-      			return;
-      		}
-		});
-        };
+	      			console.log('obstacle collision distance:');
+	      			console.log(distance)
+	      			return;
+	      		}
+			});
+     	};
 
 }

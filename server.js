@@ -30,38 +30,42 @@ io.on('connection', function(socket){
 	console.log('a user connected');
 	game.io.emit('ready');
 	let player = game.createPlayer();
-	console.log(player.name + ' connected.');
 
-  	socket.on('gamestart', function(){
+	if (player.name === "PlayerA" || player.name === "PlayerB") {
+		console.log(player.name + ' connected.');
+
+  		socket.on('gamestart', function(){
   		
   		console.log('started');
   		setTimeout(() => {game.start()},200);
   		//console.log(game.enemycount);
-  		//console.log(game.enemy1)
-  		//tank2.start();
-  	});
-  	socket.on('gamestop', function(){
-  		console.log('stopped');
-	    game.stop();
-	    //tank2.stop();
-  	});
-  	socket.on('gamereset', function(){
-  		console.log('resetted');
-	    game.reset();
-	    //tank2.reset();
-	    //tank2.start();
-  	});
-  	socket.on('disconnect', function(){
-	    console.log('a user disconnected');
-	    game.stop();
-	    game = null;
-	    //tank2.reset();   
-  	});
+  	
+	  	});
+	  	socket.on('gamestop', function(){
+	  		console.log('stopped');
+		    game.stop();
+		   
+	  	});
+	  	socket.on('gamereset', function(){
+	  		console.log('resetted');
+		    game.reset();
+		
+	  	});
+	  	socket.on('disconnect', function(){
+		    console.log('a user disconnected');
+		    game.stop();
+		    game = null;
+	 
+	  	});
 
-  	socket.on('keypressed', function(key){
-  		//console.log(key);
-  		player.move(key);
-  	});
+	  	socket.on('keypressed', function(key){
+	  		//console.log(key);
+	  		player.move(key);
+	  	});
+	} else if (player.name === 'Player limit') {
+		console.log('Too many players.')
+	}
+
 });
 
 http.listen(port, function(){
