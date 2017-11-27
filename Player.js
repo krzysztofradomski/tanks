@@ -6,7 +6,8 @@ module.exports = class Player {
         this.lives = config.lives;
         this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
-        this.position = config.position;      
+        this.position = config.position;
+        this.color = config.color;
         ///this.running;
         this.sandbox = { x: 500, y: 500 };
         this.playersize = 50;
@@ -43,6 +44,7 @@ module.exports = class Player {
         if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.sandbox.y - this.drawsize}
         if (this.position.x < 0) {this.position.x = 0};
         if (this.position.y < 0) {this.position.y = 0};
+        this.obstaclesCollisionDetection()
     }
 
     generateMovement() {         
@@ -79,27 +81,24 @@ module.exports = class Player {
     }
 
     obstaclesCollisionDetection() {
-        this.obstacles.map((v2,j,arr) => { 
-            let i1 = i;
-            let i2 = j;
-            let v1 = v;
-            var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
-            var b = v1.position.y - v2.y;
+        this.obstacles.map((v2,i,arr) => { 
+            let v1 = this;
+            var a = this.position.x - v2.x > 0 ? this.position.x - v2.x : v2.x - this.position.x;
+            var b = this.position.y - v2.y;
             let distance = Math.sqrt(a*a + b*b);
-            if (v.movementQ.length > 0 && 
-                distance < this.drawsize) {
+            if (distance < this.drawsize) {
 
-                if (this[this.enemies[i].name].position.x > v2.x) { //po prawej
-                    this[this.enemies[i].name].position.x += v2.x+this.drawsize - this[this.enemies[i].name].position.x
+                if (this.position.x > v2.x) { //po prawej
+                    this.position.x += v2.x+this.drawsize - this.position.x
                 };
-                if (this[this.enemies[i].name].position.y > v2.y) { //u dolu
-                    this[this.enemies[i].name].position.y += v2.y+this.drawsize - this[this.enemies[i].name].position.y
+                if (this.position.y > v2.y) { //u dolu
+                    this.position.y += v2.y+this.drawsize - this.position.y
                 };
-                if (this[this.enemies[i].name].position.x < v2.x) { //po lewej
-                    this[this.enemies[i].name].position.x -= v2.x - this[this.enemies[i].name].position.x;
+                if (this.position.x < v2.x) { //po lewej
+                    this.position.x -= v2.x - this.position.x;
                 };
-                if (this[this.enemies[i].name].position.y < v2.y) { //u gory
-                    this[this.enemies[i].name].position.y -= v2.y - this[this.enemies[i].name].position.y;
+                if (this.position.y < v2.y) { //u gory
+                    this.position.y -= v2.y - this.position.y;
                 };
 
                 console.log('obstacle collision distance:');
@@ -108,6 +107,8 @@ module.exports = class Player {
             }
         });
     };
+
+
 
     kill() {
        

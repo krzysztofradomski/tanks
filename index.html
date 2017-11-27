@@ -79,14 +79,14 @@
               let playerAX = gamestate.playerA.position.x;
               let playerAY = gamestate.playerA.position.y;  
               context.beginPath();  
-              context.fillStyle = 'green';
+              context.fillStyle = gamestate.playerA.color;
               context.fillRect(playerAX,playerAY,playerASize,playerASize);
 
               let playerBSize = gamestate.playerB.drawsize
               let playerBX = gamestate.playerB.position.x;
               let playerBY = gamestate.playerB.position.y;  
               context.beginPath();  
-              context.fillStyle = 'blue';
+              context.fillStyle = gamestate.playerB.color;
               context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
             }
            

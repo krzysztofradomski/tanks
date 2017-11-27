@@ -9,7 +9,8 @@ module.exports = class Game {
         this.drawsize = 25;
         this.obstaclesize = 25;
         this.on = false;
-        this.speed = 1000 / 25;
+        this.refreshRate = 1000 / 25;
+        this.tankspeed = 1; //speed multiplier, up to 5.
         this.running;
         this.enemies = [];
         this.enemycount = 0;
@@ -32,17 +33,19 @@ module.exports = class Game {
 	    		name: 'PlayerA',
 	    		level: 1,
 	    		lives: 1,
-	    		speed: 5,
+	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 250, y: 480},
-	    		position: {x: 50, y: 480}
+	    		position: {x: 50, y: 480},
+	    		color: 'green'
 	    }
 	    let playerBConfig =  {
 	    		name: 'PlayerB',
 	    		level: 1,
 	    		lives: 1,
-	    		speed: 5,
+	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 250, y: 480},
-	    		position: {x: 450, y: 480}
+	    		position: {x: 450, y: 480},
+	    		color: 'blue'
 	    }
 	    if (!this.PlayerA) {
 	    	this.PlayerA = new Player(this.io, playerAConfig, this.obstacles);
@@ -132,6 +135,8 @@ module.exports = class Game {
       				this[this.enemies[i].name].move();
       				this.tanksCollisionDetection(i,v);
       				this.obstaclesCollisionDetection(i,v);
+      				this.playerCollisionDetection(i,v, this.PlayerA);
+      				this.playerCollisionDetection(i,v, this.PlayerB);
       				
 	                let pos = this[this.enemies[i].name].position;
 	                //console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);
@@ -142,7 +147,7 @@ module.exports = class Game {
                 this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB});
                 //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
-            }, this.speed)
+            }, this.refreshRate)
         }
     }
 
@@ -160,8 +165,8 @@ module.exports = class Game {
       		let i1 = i;
       		let i2 = j;
       		let v1 = v;
-      		var a = v1.position.x - v2.position.x > 0 ? v1.position.x - v2.position.x : v2.position.x - v1.position.x;
-			var b = v1.position.y - v2.position.y;
+      		let a = v1.position.x - v2.position.x > 0 ? v1.position.x - v2.position.x : v2.position.x - v1.position.x;
+			let b = v1.position.y - v2.position.y;
 			let distance = Math.sqrt(a*a + b*b);
       		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
       			distance < this.enemysize &&
@@ -185,8 +190,8 @@ module.exports = class Game {
 	      		let i1 = i;
 	      		let i2 = j;
 	      		let v1 = v;
-	      		var a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
-				var b = v1.position.y - v2.y;
+	      		let a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
+				let b = v1.position.y - v2.y;
 				let distance = Math.sqrt(a*a + b*b);
 	      		if (v.movementQ.length > 0 && 
 	      			distance < this.drawsize) {
@@ -210,5 +215,16 @@ module.exports = class Game {
 	      		}
 			});
      	};
+
+     	playerCollisionDetection(i,v, player) {
+     		let a = v.position.x - player.position.x;
+			let b = v.position.y - player.position.y;
+			let distance = Math.sqrt(a*a + b*b);
+
+			if (distance < this.drawsize) {
+				player.color = "orange";
+				console.log(player.name + ' - tank collision')
+     		}
+     	}
 
 }
