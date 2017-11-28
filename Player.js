@@ -1,6 +1,7 @@
 module.exports = class Player {
 
     constructor(io, config, obstacles) {
+        this.config = config;
         this.name = config.name;
         this.level = config.level;
         this.lives = config.lives;
@@ -44,20 +45,20 @@ module.exports = class Player {
         if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.sandbox.y - this.drawsize}
         if (this.position.x < 0) {this.position.x = 0};
         if (this.position.y < 0) {this.position.y = 0};
-        this.obstaclesCollisionDetection()
+        this.obstaclesCollisionDetection();
     }
 
     generateMovement() {         
     } 
 
-    reset() {
+    reset(obst) {
          if (this.name) {
-            this.on = false;
-            this.movementQ = [];
-            clearInterval(this.running);
-            let x = this.origin.x;
-            let y = this.origin.y;
+            let x = this.config.origin.x;
+            let y = this.config.origin.y;
+            let color = this.config.color;
+            this.color = color;
             this.position = {x,y};
+            this.obstacles = obst;
             return `Player resetted.`;
         }
         return `Player does not exist`;

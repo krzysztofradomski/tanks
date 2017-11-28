@@ -26,6 +26,7 @@ module.exports = class Game {
         this.createObstacles();
     	this.createEnemies();
     	//this.io.emit('ready');
+    	console.log('Game initialised.')
     }
 
     createPlayer() {
@@ -34,7 +35,7 @@ module.exports = class Game {
 	    		level: 1,
 	    		lives: 1,
 	    		speed: 5 * this.tankspeed,
-	    		origin: {x: 250, y: 480},
+	    		origin: {x: 50, y: 480},
 	    		position: {x: 50, y: 480},
 	    		color: 'green'
 	    }
@@ -43,7 +44,7 @@ module.exports = class Game {
 	    		level: 1,
 	    		lives: 1,
 	    		speed: 5 * this.tankspeed,
-	    		origin: {x: 250, y: 480},
+	    		origin: {x: 450, y: 480},
 	    		position: {x: 450, y: 480},
 	    		color: 'blue'
 	    }
@@ -83,10 +84,9 @@ module.exports = class Game {
 	    	this[enemyName] = new Tank (this.io, enemyConfig);
 	    	this.enemies.push(this[enemyName].info);
     	}
-    		console.log('enemies = ');
-	    	console.log(this.enemies);
-	    	console.log('enemies number = ');
-	    	console.log(this.enemies.length);
+    		// console.log('enemies = ');
+	    	// console.log(this.enemies);
+	    	console.log('enemies number = ' + this.enemies.length);
     }
 
     obstaclesGenerator() {
@@ -119,8 +119,11 @@ module.exports = class Game {
             this.enemycount = 0;
             this.enemies = [];
             this.obstacles = [];
-            clearInterval(this.running);
             this.init();
+            this.PlayerA.reset(this.obstacles);
+        	this.PlayerB.reset(this.obstacles);
+            clearInterval(this.running);
+           
             setTimeout(() => {this.start()},500);
             return `Game resetted.`;
         }
@@ -135,8 +138,12 @@ module.exports = class Game {
       				this[this.enemies[i].name].move();
       				this.tanksCollisionDetection(i,v);
       				this.obstaclesCollisionDetection(i,v);
-      				this.playerCollisionDetection(i,v, this.PlayerA);
-      				this.playerCollisionDetection(i,v, this.PlayerB);
+      				if (!!this.PlayerA) {
+      					this.playerCollisionDetection(i,v, this.PlayerA);
+      				}
+      				if (!!this.PlayerB) {
+      					this.playerCollisionDetection(i,v, this.PlayerB);
+      				}
       				
 	                let pos = this[this.enemies[i].name].position;
 	                //console.log(`A ${this.enemies[i].name} moved to ${this[this.enemies[i].name].position.x}:${this[this.enemies[i].name].position.y}.`);

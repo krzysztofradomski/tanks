@@ -16,60 +16,62 @@ let Player = require('./Player.js')
 
 // //intialize firebase related data
 // let db = admin.database();
-// let ref = db.ref("/convos");
+// let ref = db.ref("/scores");
 
-app.get('/', function(req, res){
+app.get('/', (req, res) => {
   	res.sendFile(__dirname + '/index.html');
 });
 
 let game = new Game(io);
 
-	game.init();
+game.init();
 
-io.on('connection', function(socket){
-	console.log('A user connected.');
-	game.io.emit('ready');
+io.on('connection', (socket) => {
+	console.log('Connecting a new player.');
+	
+	game = game || new Game(io);
 	let player = game.createPlayer();
 
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
-
-  		socket.on('gamestart', function(){
+		game.io.emit('ready');
+		console.log('Send game interface ready.');
+  		socket.on('gamestart', () => {
   		
-  		console.log('started');
+  		console.log('Game started.');
   		setTimeout(() => {game.start()},200);
   		//console.log(game.enemycount);
   	
 	  	});
-	  	socket.on('gamestop', function(){
-	  		console.log('stopped');
+	  	socket.on('gamestop', () => {
+	  		console.log('Game stopped.');
 		    game.stop();
 		   
 	  	});
-	  	socket.on('gamereset', function(){
-	  		console.log('resetted');
+	  	socket.on('gamereset', () => {
+	  		console.log('Game resetted.');
 		    game.reset();
 		
 	  	});
-	  	socket.on('disconnect', function(){
-		    console.log('a user disconnected');
-		    game.stop();
-		    game = null;
+	  	socket.on('disconnect', () => {
+		    console.log('A player disconnected.');
+		    game.stop();	    
+		    console.log('Deleting ' + player.name + '...');
+		    game[player.name] = null;
+		    //game = null;
 	 
 	  	});
 
-	  	socket.on('keypressed', function(key){
+	  	socket.on('keypressed', (key) => {
 	  		//console.log(key);
 	  		player.move(key);
 	  	});
-	} else if (player.name === 'Player limit') {
-		console.log('Too many players.')
+	} else if (player === 'Player limit') {
+		console.log('Too many players.');
 	}
 
 });
 
-http.listen(port, function(){
-  	console.log('listening on *:' + port);
+http.listen(port, () => {
+  	console.log('Server listening on *:' + port);
 });
-
-
