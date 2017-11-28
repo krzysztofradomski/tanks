@@ -64,6 +64,16 @@
               context.beginPath();
               context.fillStyle = 'red';
               context.fillRect(x,y,r,r);
+
+              if (!!gamestate.enemies[n].missile) {
+                let mr = gamestate.enemies[n].missile.size;
+                let mx = gamestate.enemies[n].missile.position.x;
+                let my = gamestate.enemies[n].missile.position.y;   
+                context.beginPath();
+                context.fillStyle = 'white';
+                context.fillRect(mx,my,mr,mr);
+              }
+
             }
 
             for (let n = 0; n < gamestate.obstacles.length; n++ ) {
@@ -71,7 +81,7 @@
               let x = gamestate.obstacles[n].x;
               let y = gamestate.obstacles[n].y;   
               context.beginPath();
-              context.fillStyle = 'white';
+              context.fillStyle = 'saddlebrown';
               context.fillRect(x,y,r,r);
             }
             if (!!gamestate.playerA) {

@@ -15,8 +15,8 @@ module.exports = class Tank {
         this.movementQ = [];
         this.enemysize = 50;
         this.drawsize = 25;
-        this.otherTanksPositions = [];
         this.moveTo;
+        this.missile = null;
     }
 
     get info() {
@@ -32,7 +32,7 @@ module.exports = class Tank {
                 enemysize: this.enemysize,
                 drawsize: this.drawsize,
                 movementQ: this.movementQ,
-                otherTanksPositions: this.otherTanksPositions
+                missile: this.missile
             }
         }
         return `Tank does not exist`;
@@ -45,14 +45,19 @@ module.exports = class Tank {
             this.generateMovement();
             this.moveTo = this.movementQ[0];
             this.position[this.moveTo.axis] = this.position[this.moveTo.axis] + this.moveTo.vector;
-            if (this.position.x > this.sandbox.x-this.drawsize) {this.position.x = this.position.x - this.drawsize}
-            if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.position.y - this.drawsize}
-            if (this.position.x < 0) {this.position.x = 0};
-            if (this.position.y < 0) {this.position.y = 0};
+            
+            this.wallsDetection();
             
             //console.log( this.name, this.movementQ);
         } 
         return `Tank does not exist`;
+    }
+
+    wallsDetection() {
+        if (this.position.x > this.sandbox.x-this.drawsize) {this.position.x = this.position.x - this.drawsize}
+        if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.position.y - this.drawsize}
+        if (this.position.x < 0) {this.position.x = 0};
+        if (this.position.y < 0) {this.position.y = 0};
     }
 
     generateMovement() {   
@@ -150,18 +155,31 @@ module.exports = class Tank {
         return `Tank does not exist`;
     }
 
-    shoot() {
-        if (this.name) {
-            console.log(`Czolg rodzaju ${this.name} szczela w Natalie. Bang bang!`);
+    shooting() {
+       if (!this.missile && Date.now() % 9 == 0) {  
+            let position = this.position;
+            let axis = (this.movementQ.slice(0,1))[0].axis;
+            this.missile = {
+                size: 5,
+                position: {
+                    x: position.x+this.drawsize/2,
+                    y: position.y+this.drawsize/2
+                },
+                axis: axis
+            };
+        }; 
+        if (!!this.missile) {
+            this.missile.position[this.missile.axis] += 10;
+            if (this.missile.position.x > this.sandbox.x || 
+                this.missile.position.y > this.sandbox.y || 
+                this.missile.position.x < 0 ||
+                this.missile.position.y < 0 ) {
+                this.missile = null;
+            };        
         }
-        return `Tank does not exist`;
+       
     }
 
-    collisionDetection() {
-        this.otherTanksPositions.map((v,i,arr) => { 
-
-        });
-    }
 
     kill() {
         if (this.name) {

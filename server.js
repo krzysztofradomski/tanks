@@ -35,7 +35,7 @@ io.on('connection', (socket) => {
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
 		game.io.emit('ready');
-		console.log('Send game interface ready.');
+		console.log('Sent game interface ready to ' + player.name + '.');
   		socket.on('gamestart', () => {
   		
   		console.log('Game started.');
