@@ -20,6 +20,16 @@
      <button  type="button" disabled id="stop">Stop</button>
      <button  type="button" disabled id="reset">Reset</button>
    </controls>
+   <stats>
+    <playerA>
+      <p>PlayerA Score: <span class="scoreValue"></span></p>
+      <p>PlayerA Lives: <span class="livesValue"></span></p>
+    </playerA>
+    <playerB>
+      <p>PlayerB Score: <span class="scoreValue"></span></p>
+      <p>PlayerB Lives: <span class="livesValue"></span></p>
+    </playerB>
+   </stats>
     <script>
       $(function () {
         let socket = io();
@@ -85,6 +95,10 @@
               context.fillRect(x,y,r,r);
             }
             if (!!gamestate.playerA) {
+              let lives = gamestate.playerA.lives;
+              let score = gamestate.playerA.score;
+              $('stats playerA .scoreValue').text(score);
+              $('stats playerA .livesValue').text(lives);
               let playerASize = gamestate.playerA.drawsize
               let playerAX = gamestate.playerA.position.x;
               let playerAY = gamestate.playerA.position.y;  
@@ -94,6 +108,10 @@
             }
 
             if (!!gamestate.playerB) {
+              let lives = gamestate.playerB.lives;
+              let score = gamestate.playerB.score;
+              $('stats playerB .scoreValue').text(score);
+              $('stats playerB .livesValue').text(lives);
               let playerBSize = gamestate.playerB.drawsize
               let playerBX = gamestate.playerB.position.x;
               let playerBY = gamestate.playerB.position.y;  

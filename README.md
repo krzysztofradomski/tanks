@@ -12,7 +12,9 @@ To do list:
 - random obstacles generator WORK IN PROGRESS
 - tank collision detection DONE
 - 2 players online mode DONE
-- tanks shooting
+- tanks shooting DONE
+- player shooting
+- player lives DONE
 - player score
 - orzełek inmplementation
 - support for more than one game at a time 

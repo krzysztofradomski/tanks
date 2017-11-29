@@ -5,6 +5,7 @@ module.exports = class Player {
         this.name = config.name;
         this.level = config.level;
         this.lives = config.lives;
+        this.score = config.score;
         this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
         this.position = config.position;
@@ -18,7 +19,16 @@ module.exports = class Player {
 
     get info() {
         if (this.name) {
-            return {name: this.name, level: this.level, lives: this.lives, speed: this.speed, origin: this.origin, position: this.position, on: this.on, movementQ: this.movementQ}
+            return {
+                    name: this.name, 
+                    level: this.level, 
+                    lives: this.lives,
+                    score: this.score,
+                    color: this.color, 
+                    speed: this.speed, 
+                    origin: this.origin,
+                    position: this.position 
+                    }
         }
         return `Player does not exist`;
     }

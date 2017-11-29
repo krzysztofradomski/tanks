@@ -33,7 +33,8 @@ module.exports = class Game {
     	let playerAConfig =  {
 	    		name: 'PlayerA',
 	    		level: 1,
-	    		lives: 1,
+	    		lives: 5,
+	    		score: 0,
 	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 50, y: 480},
 	    		position: {x: 50, y: 480},
@@ -42,7 +43,8 @@ module.exports = class Game {
 	    let playerBConfig =  {
 	    		name: 'PlayerB',
 	    		level: 1,
-	    		lives: 1,
+	    		lives: 5,
+	    		score: 0,
 	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 450, y: 480},
 	    		position: {x: 450, y: 480},
@@ -141,11 +143,11 @@ module.exports = class Game {
       				this.obstaclesCollisionDetection(i,v);
       				if (!!this.PlayerA) {
       					this.playerCollisionDetection(i,v, this.PlayerA);
-      					this.playerHitDetection(v.missile, this.PlayerA);
+      					this.playerHitDetection(v, this.PlayerA);
       				}
       				if (!!this.PlayerB) {
       					this.playerCollisionDetection(i,v, this.PlayerB);
-      					this.playerHitDetection(v.missile, this.PlayerB)
+      					this.playerHitDetection(v, this.PlayerB)
       				}
       				
 	                let pos = this[this.enemies[i].name].position;
@@ -232,18 +234,22 @@ module.exports = class Game {
 
 			if (distance < this.drawsize) {
 				player.color = "orange";
-				console.log(player.name + ' - tank collision')
+				console.log(player.name + ' - ' + v.name + ' collision.');
+				player.lives -= 1;
      		}
      	};
 
-     	playerHitDetection(missile, player) {
+     	playerHitDetection(tank, player) {
+     	   let missile = tank.missile;
 	       if (player && missile) {
 		       	let a = missile.position.x - (player.position.x + this.drawsize/2);
 		        let b = missile.position.y - (player.position.y + this.drawsize/2);
 		        let distance = Math.sqrt(a*a + b*b);
 		        if (distance < this.drawsize/2 ) {
 		            player.color = "yellow";
-		            console.log('player hit');
+		            console.log(player.name + ' hit by ' + tank.name);
+		            player.lives -= 1;
+		            this[tank.name].missile = null;
 		        };
 	       }    
     	};
