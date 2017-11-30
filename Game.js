@@ -144,10 +144,14 @@ module.exports = class Game {
       				if (!!this.PlayerA) {
       					this.playerCollisionDetection(i,v, this.PlayerA);
       					this.playerHitDetection(v, this.PlayerA);
+      					this.PlayerA.shoot(false);
+      					this.playerScoreDetection(v, this.PlayerA);
       				}
       				if (!!this.PlayerB) {
       					this.playerCollisionDetection(i,v, this.PlayerB);
       					this.playerHitDetection(v, this.PlayerB)
+      					this.PlayerB.shoot(false);
+      					this.playerScoreDetection(v, this.PlayerB);
       				}
       				
 	                let pos = this[this.enemies[i].name].position;
@@ -250,6 +254,20 @@ module.exports = class Game {
 		            console.log(player.name + ' hit by ' + tank.name);
 		            player.lives -= 1;
 		            this[tank.name].missile = null;
+		        };
+	       }    
+    	};
+    	playerScoreDetection(tank, player) {
+     	   let missile = player.missile;
+	       if (tank && missile) {
+		       	let a = missile.position.x - (tank.position.x + this.drawsize/2);
+		        let b = missile.position.y - (tank.position.y + this.drawsize/2);
+		        let distance = Math.sqrt(a*a + b*b);
+		        if (distance < this.drawsize/2 ) {
+		            this[tank.name].color = 'white';
+		            console.log(tank.name + ' hit by ' + player.name);
+		            player.score += 1;
+		            this[player.name].missile = null;
 		        };
 	       }    
     	};

@@ -17,6 +17,7 @@ module.exports = class Tank {
         this.drawsize = 25;
         this.moveTo;
         this.missile = null;
+        this.color = 'red';
     }
 
     get info() {
@@ -32,7 +33,8 @@ module.exports = class Tank {
                 enemysize: this.enemysize,
                 drawsize: this.drawsize,
                 movementQ: this.movementQ,
-                missile: this.missile
+                missile: this.missile,
+                color: this.color
             }
         }
         return `Tank does not exist`;
@@ -98,7 +100,7 @@ module.exports = class Tank {
             this.movementQ.push(moveNow);
         } 
         if ( this.movementQ.length < 15) {
-            let moves = parseInt(Math.random() *10);
+            let moves = parseInt(Math.random() * 10);
             for (let i = 0; i < moves ; i++) {
                 this.movementQ.push(moveNow)
             }   
@@ -156,20 +158,25 @@ module.exports = class Tank {
     }
 
     shooting() {
+
        if (!this.missile && Date.now() % 9 == 0) {  
             let position = this.position;
             let axis = (this.movementQ.slice(0,1))[0].axis;
+            let vector = (this.movementQ.slice(0,1))[0].vector;
             this.missile = {
                 size: 5,
                 position: {
                     x: position.x+this.drawsize/2,
                     y: position.y+this.drawsize/2
+                    
                 },
+                vector: vector * 2,
                 axis: axis
             };
+            
         }; 
         if (!!this.missile) {
-            this.missile.position[this.missile.axis] += 10;
+            this.missile.position[this.missile.axis] += this.missile.vector
             if (this.missile.position.x > this.sandbox.x || 
                 this.missile.position.y > this.sandbox.y || 
                 this.missile.position.x < 0 ||

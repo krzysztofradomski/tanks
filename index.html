@@ -72,7 +72,7 @@
               let x = gamestate.enemies[n].position.x;
               let y = gamestate.enemies[n].position.y;   
               context.beginPath();
-              context.fillStyle = 'red';
+              context.fillStyle = gamestate.enemies[n].color
               context.fillRect(x,y,r,r);
 
               if (!!gamestate.enemies[n].missile) {
@@ -105,6 +105,14 @@
               context.beginPath();  
               context.fillStyle = gamestate.playerA.color;
               context.fillRect(playerAX,playerAY,playerASize,playerASize);
+               if (!!gamestate.playerA.missile) {
+                let mr = gamestate.playerA.missile.size;
+                let mx = gamestate.playerA.missile.position.x;
+                let my = gamestate.playerA.missile.position.y;   
+                context.beginPath();
+                context.fillStyle = 'orange';
+                context.fillRect(mx,my,mr,mr);
+              }
             }
 
             if (!!gamestate.playerB) {

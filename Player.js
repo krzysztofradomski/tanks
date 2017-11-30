@@ -15,6 +15,9 @@ module.exports = class Player {
         this.playersize = 50;
         this.drawsize = 25;
         this.obstacles = obstacles;
+        this.missile = null;
+        this.axis = '-y';
+        this.vector = 10;
     }
 
     get info() {
@@ -35,18 +38,26 @@ module.exports = class Player {
 
     move(key) {
         switch (key) {
+            case 'q':
+                this.shoot(true);
+                break;
             case 'w', 'ArrowUp':
-                this.position.y -= 10;
+                this.position.y -= 10; 
+                this.axis = '-y';
                 break;
             case 's', 'ArrowDown':
-                this.position.y += 10;
+                this.position.y += 10;          
+                this.axis = 'y';
                  break;
             case 'a', 'ArrowLeft':
-                this.position.x -= 10;
+                this.position.x -= 10;         
+                this.axis = '-x';
                 break;
             case 'd', 'ArrowRight':
-                this.position.x += 10;
+                this.position.x += 10;        
+                this.axis = 'x';
                 break;
+           
             default:
                 this.position.x += 0;
                 this.position.y += 0;
@@ -84,11 +95,50 @@ module.exports = class Player {
         return `Player does not exist`;
     }
 
-    shoot() {
-        if (this.name) {
-            console.log(`Czolg rodzaju ${this.name} szczela w Natalie. Bang bang!`);
+   shoot(load) {
+       if (load && !this.missile) {  
+            let position = this.position;
+            let axis = this.axis;
+            this.missile = {
+                size: 10,
+                position: {
+                    x: position.x+this.drawsize/2,
+                    y: position.y+this.drawsize/2
+                },
+                vector: -10,
+                axis: 'y'
+            };
+            switch (axis) {
+                case '-x':
+                    this.missile.vector = -10;
+                    this.missile.axis = 'x';
+                    break;
+                case 'x':
+                    this.missile.vector = 10;
+                    this.missile.axis = 'x';
+                    break;
+                case '-y':
+                    this.missile.vector = -10;
+                    this.missile.axis = 'y';
+                    break;
+                case 'y':
+                    this.missile.vector = 10;
+                    this.axis = 'y';
+                    break;
+
+            }
+           
+        }; 
+        if (!!this.missile) {
+            this.missile.position[this.missile.axis] += this.missile.vector/2;
+            if (this.missile.position.x > this.sandbox.x || 
+                this.missile.position.y > this.sandbox.y || 
+                this.missile.position.x < 0 ||
+                this.missile.position.y < 0 ) {
+                this.missile = null;
+            };        
         }
-        return `Player does not exist`;
+       
     }
 
     obstaclesCollisionDetection() {
