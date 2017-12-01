@@ -39,7 +39,7 @@ module.exports = class Player {
     move(key) {
         switch (key) {
             case 'q':
-                this.shoot(true);
+                this.loading();
                 break;
             case 'w', 'ArrowUp':
                 this.position.y -= 10; 
@@ -95,8 +95,8 @@ module.exports = class Player {
         return `Player does not exist`;
     }
 
-   shoot(load) {
-       if (load && !this.missile) {  
+    loading() {
+        if (!this.missile) {  
             let position = this.position;
             let axis = this.axis;
             this.missile = {
@@ -108,27 +108,32 @@ module.exports = class Player {
                 vector: -10,
                 axis: 'y'
             };
-            switch (axis) {
-                case '-x':
-                    this.missile.vector = -10;
-                    this.missile.axis = 'x';
-                    break;
-                case 'x':
-                    this.missile.vector = 10;
-                    this.missile.axis = 'x';
-                    break;
-                case '-y':
-                    this.missile.vector = -10;
-                    this.missile.axis = 'y';
-                    break;
-                case 'y':
-                    this.missile.vector = 10;
-                    this.axis = 'y';
-                    break;
+             switch (axis) {
+            case '-x':
+                this.missile.vector = -10;
+                this.missile.axis = 'x';
+                break;
+            case 'x':
+                this.missile.vector = 10;
+                this.missile.axis = 'x';
+                break;
+            case '-y':
+                this.missile.vector = -10;
+                this.missile.axis = 'y';
+                break;
+            case 'y':
+                this.missile.vector = 10;
+                this.axis = 'y';
+                break;
 
-            }
+        }
+        }
+    }
+
+   shooting() {
+        //this.loading();
+       
            
-        }; 
         if (!!this.missile) {
             this.missile.position[this.missile.axis] += this.missile.vector/2;
             if (this.missile.position.x > this.sandbox.x || 
@@ -136,38 +141,62 @@ module.exports = class Player {
                 this.missile.position.x < 0 ||
                 this.missile.position.y < 0 ) {
                 this.missile = null;
-            };        
+            };
+            this.obstaclesHitDetection();     
         }
        
     }
 
     obstaclesCollisionDetection() {
         this.obstacles.map((v2,i,arr) => { 
-            let v1 = this;
-            var a = this.position.x - v2.x > 0 ? this.position.x - v2.x : v2.x - this.position.x;
-            var b = this.position.y - v2.y;
-            let distance = Math.sqrt(a*a + b*b);
-            if (distance < this.drawsize) {
+            if (v2) {
+                let v1 = this;
+                var a = this.position.x - v2.x > 0 ? this.position.x - v2.x : v2.x - this.position.x;
+                var b = this.position.y - v2.y;
+                let distance = Math.sqrt(a*a + b*b);
+                if (distance < this.drawsize) {
 
-                if (this.position.x > v2.x) { //po prawej
-                    this.position.x += v2.x+this.drawsize - this.position.x
-                };
-                if (this.position.y > v2.y) { //u dolu
-                    this.position.y += v2.y+this.drawsize - this.position.y
-                };
-                if (this.position.x < v2.x) { //po lewej
-                    this.position.x -= v2.x - this.position.x;
-                };
-                if (this.position.y < v2.y) { //u gory
-                    this.position.y -= v2.y - this.position.y;
-                };
+                    if (this.position.x > v2.x) { //po prawej
+                        this.position.x += v2.x+this.drawsize - this.position.x
+                    };
+                    if (this.position.y > v2.y) { //u dolu
+                        this.position.y += v2.y+this.drawsize - this.position.y
+                    };
+                    if (this.position.x < v2.x) { //po lewej
+                        this.position.x -= v2.x - this.position.x;
+                    };
+                    if (this.position.y < v2.y) { //u gory
+                        this.position.y -= v2.y - this.position.y;
+                    };
+                   
+                    console.log('obstacle collision distance:');
+                    console.log(distance)
+                    return;
+                }
+            };
+        })
+    }
 
-                console.log('obstacle collision distance:');
-                console.log(distance)
-                return;
+    obstaclesHitDetection() {
+        this.obstacles.map((v2,i,arr) => { 
+            if (this.missile && v2) {
+                let v1 = this.missile;
+                var a = this.missile.position.x - v2.x > 0 ? this.missile.position.x - v2.x : v2.x - this.missile.position.x;
+                var b = this.missile.position.y - v2.y;
+                let distance = Math.sqrt(a*a + b*b);
+                if (distance < this.drawsize-this.missile.size) {
+                    this.obstaclesDestruction(v2);
+                }
             }
         });
+
     };
+
+    obstaclesDestruction(obstacle) {
+        console.log('obstacle hit by player');
+        this.missile = null;
+        this.obstacles[this.obstacles.indexOf(obstacle)] = null;
+    }
 
 
 

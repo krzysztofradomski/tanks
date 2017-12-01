@@ -87,12 +87,14 @@
             }
 
             for (let n = 0; n < gamestate.obstacles.length; n++ ) {
-              let r = gamestate.obstacles[n].size;
-              let x = gamestate.obstacles[n].x;
-              let y = gamestate.obstacles[n].y;   
-              context.beginPath();
-              context.fillStyle = 'saddlebrown';
-              context.fillRect(x,y,r,r);
+              if (gamestate.obstacles[n]) {
+                let r = gamestate.obstacles[n].size;
+                let x = gamestate.obstacles[n].x;
+                let y = gamestate.obstacles[n].y;   
+                context.beginPath();
+                context.fillStyle = 'saddlebrown';
+                context.fillRect(x,y,r,r);
+              }
             }
             if (!!gamestate.playerA) {
               let lives = gamestate.playerA.lives;

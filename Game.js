@@ -141,21 +141,21 @@ module.exports = class Game {
       				this[this.enemies[i].name].move();
       				this.tanksCollisionDetection(i,v);
       				this.obstaclesCollisionDetection(i,v);
+      				this.obstaclesTankHitDetection(v);
       				if (!!this.PlayerA) {
       					this.playerCollisionDetection(i,v, this.PlayerA);
       					this.playerHitDetection(v, this.PlayerA);
-      					this.PlayerA.shoot(false);
+      					this.PlayerA.shooting();
       					this.playerScoreDetection(v, this.PlayerA);
       				}
       				if (!!this.PlayerB) {
       					this.playerCollisionDetection(i,v, this.PlayerB);
       					this.playerHitDetection(v, this.PlayerB)
-      					this.PlayerB.shoot(false);
+      					this.PlayerB.shooting();
       					this.playerScoreDetection(v, this.PlayerB);
       				}
       				
-	                let pos = this[this.enemies[i].name].position;
-	             
+	                let pos = this[this.enemies[i].name].position;      
 	                this[this.enemies[i].name].shooting();
 	                this.enemies[i] = this[this.enemies[i].name].info;
 
@@ -167,7 +167,7 @@ module.exports = class Game {
         }
     }
 
-     stop() {
+    stop() {
         if (this && this.on) {
             this.on = false;
             clearInterval(this.running);
@@ -176,7 +176,7 @@ module.exports = class Game {
         return `Game does not exist`;
     }
 
-      tanksCollisionDetection(i,v) {
+    tanksCollisionDetection(i,v) {
       	this.enemies.map((v2,j,arr) => { 
       		let i1 = i;
       		let i2 = j;
@@ -191,19 +191,15 @@ module.exports = class Game {
       			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};
       			this[this.enemies[i].name].movementQ = [];
       			this[this.enemies[i].name].movementQ.push(escape);
-      			// let escape2 = {axis: this[this.enemies[j].name].moveTo.axis, vector: -(this[this.enemies[j].name].moveTo.vector)};	      			
-      			// this[this.enemies[j].name].movementQ = [];
-      			// this[this.enemies[j].name].movementQ.push(escape2,escape2,escape2,escape,escape);
-      			//console.log('collision distance:');
-      			//console.log(distance)
       			return;
       		}
 		});
-        };
+    };
 
-        obstaclesCollisionDetection(i,v) {
-	      	this.obstacles.map((v2,j,arr) => { 
-	      		let i1 = i;
+    obstaclesCollisionDetection(i,v) {
+      	this.obstacles.map((v2,j,arr) => { 
+      		if (v && v2){
+      			let i1 = i;
 	      		let i2 = j;
 	      		let v1 = v;
 	      		let a = v1.position.x - v2.x > 0 ? v1.position.x - v2.x : v2.x - v1.position.x;
@@ -228,52 +224,71 @@ module.exports = class Game {
 	      			//console.log(distance)
 	      			return;
 	      		}
-			});
-     	};
+			};
+      	})
+ 	};
 
-     	playerCollisionDetection(i,v, player) {
-     		let a = v.position.x - player.position.x;
-			let b = v.position.y - player.position.y;
-			let distance = Math.sqrt(a*a + b*b);
+ 	playerCollisionDetection(i,v, player) {
+ 		let a = v.position.x - player.position.x;
+		let b = v.position.y - player.position.y;
+		let distance = Math.sqrt(a*a + b*b);
 
-			if (distance < this.drawsize) {
-				player.color = "orange";
-				console.log(player.name + ' - ' + v.name + ' collision.');
-				player.lives -= 1;
-     		}
-     	};
+		if (distance < this.drawsize) {
+			player.color = "orange";
+			console.log(player.name + ' - ' + v.name + ' collision.');
+			player.lives -= 1;
+ 		}
+ 	};
 
-     	playerHitDetection(tank, player) {
-     	   let missile = tank.missile;
-	       if (player && missile) {
-		       	let a = missile.position.x - (player.position.x + this.drawsize/2);
-		        let b = missile.position.y - (player.position.y + this.drawsize/2);
-		        let distance = Math.sqrt(a*a + b*b);
-		        if (distance < this.drawsize/2 ) {
-		            player.color = "yellow";
-		            console.log(player.name + ' hit by ' + tank.name);
-		            player.lives -= 1;
-		            this[tank.name].missile = null;
-		        };
-	       }    
-    	};
-    	playerScoreDetection(tank, player) {
-     	   let missile = player.missile;
-	       if (tank && missile) {
-		       	let a = missile.position.x - (tank.position.x + this.drawsize/2);
-		        let b = missile.position.y - (tank.position.y + this.drawsize/2);
-		        let distance = Math.sqrt(a*a + b*b);
-		        if (distance < this.drawsize/2 ) {
-		            this[tank.name].color = 'white';
-		            console.log(tank.name + ' hit by ' + player.name);
-		            player.score += 1;
-		            this[player.name].missile = null;
-		        };
-	       }    
-    	};
+ 	playerHitDetection(tank, player) {
+ 	   let missile = tank.missile;
+       if (player && missile) {
+	       	let a = missile.position.x - (player.position.x + this.drawsize/2);
+	        let b = missile.position.y - (player.position.y + this.drawsize/2);
+	        let distance = Math.sqrt(a*a + b*b);
+	        if (distance < this.drawsize/2 ) {
+	            player.color = "yellow";
+	            console.log(player.name + ' hit by ' + tank.name);
+	            player.lives -= 1;
+	            this[tank.name].missile = null;
+	        };
+       }    
+	};
 
-    	obstaclesDestruction(){
+	playerScoreDetection(tank, player) {
+ 	   let missile = player.missile;
+       if (tank && missile) {
+	       	let a = missile.position.x - (tank.position.x + this.drawsize/2);
+	        let b = missile.position.y - (tank.position.y + this.drawsize/2);
+	        let distance = Math.sqrt(a*a + b*b);
+	        if (distance < this.drawsize/2 ) {
+	            this[tank.name].color = 'white';
+	            console.log(tank.name + ' hit by ' + player.name);
+	            player.score += 1;
+	            this[player.name].missile = null;
+	        };
+       }    
+	};
 
-    	}
+    obstaclesTankHitDetection(tank) {
+        this.obstacles.map((v2,i,arr) => { 
+            if (tank.missile && v2) {
+                let v1 = tank.missile;
+                var a = tank.missile.position.x - v2.x > 0 ? tank.missile.position.x - v2.x : v2.x - tank.missile.position.x;
+                var b = tank.missile.position.y - v2.y;
+                let distance = Math.sqrt(a*a + b*b);
+                if (distance < tank.drawsize-tank.missile.size) {
+                    this.obstaclesDestruction(tank, v2);
+                }
+            }
+        });
+
+    };
+
+    obstaclesDestruction(tank, obstacle) {
+        console.log('obstacle hit by ' + tank.name);
+       	this[tank.name].missile = null;
+        this.obstacles[this.obstacles.indexOf(obstacle)] = null;
+    }
 
 }
