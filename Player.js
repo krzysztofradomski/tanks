@@ -17,7 +17,7 @@ module.exports = class Player {
         this.obstacles = obstacles;
         this.missile = null;
         this.axis = '-y';
-        this.vector = 10;
+        this.vector = 25;
     }
 
     get info() {
@@ -105,24 +105,24 @@ module.exports = class Player {
                     x: position.x+this.drawsize/2,
                     y: position.y+this.drawsize/2
                 },
-                vector: -10,
+                vector: -25,
                 axis: 'y'
             };
              switch (axis) {
             case '-x':
-                this.missile.vector = -10;
+                this.missile.vector = -25;
                 this.missile.axis = 'x';
                 break;
             case 'x':
-                this.missile.vector = 10;
+                this.missile.vector = 25;
                 this.missile.axis = 'x';
                 break;
             case '-y':
-                this.missile.vector = -10;
+                this.missile.vector = -25;
                 this.missile.axis = 'y';
                 break;
             case 'y':
-                this.missile.vector = 10;
+                this.missile.vector = 25;
                 this.axis = 'y';
                 break;
 
@@ -135,7 +135,7 @@ module.exports = class Player {
        
            
         if (!!this.missile) {
-            this.missile.position[this.missile.axis] += this.missile.vector/2;
+            this.missile.position[this.missile.axis] += this.missile.vector;
             if (this.missile.position.x > this.sandbox.x || 
                 this.missile.position.y > this.sandbox.y || 
                 this.missile.position.x < 0 ||
@@ -181,8 +181,8 @@ module.exports = class Player {
         this.obstacles.map((v2,i,arr) => { 
             if (this.missile && v2) {
                 let v1 = this.missile;
-                var a = this.missile.position.x - v2.x > 0 ? this.missile.position.x - v2.x : v2.x - this.missile.position.x;
-                var b = this.missile.position.y - v2.y;
+                var a = (this.missile.position.x+this.missile.size/2) -  (v2.x+v2.size/2);
+                var b = (this.missile.position.y+this.missile.size/2) - (v2.y+v2.size/2);
                 let distance = Math.sqrt(a*a + b*b);
                 if (distance < this.drawsize-this.missile.size) {
                     this.obstaclesDestruction(v2);

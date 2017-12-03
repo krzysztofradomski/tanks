@@ -124,7 +124,9 @@ module.exports = class Game {
             this.obstacles = [];
             this.init();
             this.PlayerA.reset(this.obstacles);
-        	this.PlayerB.reset(this.obstacles);
+        	if (this.PlayerB) {
+        		this.PlayerB.reset(this.obstacles);
+        	};
             clearInterval(this.running);
            
             setTimeout(() => {this.start()},500);
@@ -136,8 +138,15 @@ module.exports = class Game {
     start() {
         if (this && !this.on) {
             this.on = true;
-            this.running = setInterval(() => {      
+            this.running = setInterval(() => {
+	            if (!!this.PlayerA) {
+	      					this.PlayerA.shooting();      					
+  				}
+  				if (!!this.PlayerB) {
+  					this.PlayerB.shooting();
+  				}     
       			this.enemies.map((v,i) => {
+      				if (this.enemies[i] && this[this.enemies[i].name]) {
       				this[this.enemies[i].name].move();
       				this.tanksCollisionDetection(i,v);
       				this.obstaclesCollisionDetection(i,v);
@@ -145,21 +154,23 @@ module.exports = class Game {
       				if (!!this.PlayerA) {
       					this.playerCollisionDetection(i,v, this.PlayerA);
       					this.playerHitDetection(v, this.PlayerA);
-      					this.PlayerA.shooting();
-      					this.playerScoreDetection(v, this.PlayerA);
+      					this.playerScoreDetection(i, v, this.PlayerA);
+      					;
+      					
       				}
       				if (!!this.PlayerB) {
       					this.playerCollisionDetection(i,v, this.PlayerB);
       					this.playerHitDetection(v, this.PlayerB)
-      					this.PlayerB.shooting();
-      					this.playerScoreDetection(v, this.PlayerB);
+      			
+      					this.playerScoreDetection(i, v, this.PlayerB);
       				}
-      				
-	                let pos = this[this.enemies[i].name].position;      
+      				if (this.enemies[i] && this[this.enemies[i].name]) {
+	                //let pos = this[this.enemies[i].name].position;      
 	                this[this.enemies[i].name].shooting();
 	                this.enemies[i] = this[this.enemies[i].name].info;
-
-	            });
+	                }
+	            };
+      		})
                 this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB});
                 //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
@@ -178,20 +189,22 @@ module.exports = class Game {
 
     tanksCollisionDetection(i,v) {
       	this.enemies.map((v2,j,arr) => { 
-      		let i1 = i;
-      		let i2 = j;
-      		let v1 = v;
-      		let a = v1.position.x - v2.position.x > 0 ? v1.position.x - v2.position.x : v2.position.x - v1.position.x;
-			let b = v1.position.y - v2.position.y;
-			let distance = Math.sqrt(a*a + b*b);
-      		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
-      			distance < this.drawsize &&
-      			v1.name !== v2.name) {
-      			let vector = this[this.enemies[i].name].moveTo.vector > v2.position.x ? this.enemysize : -this.enemysize;
-      			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};
-      			this[this.enemies[i].name].movementQ = [];
-      			this[this.enemies[i].name].movementQ.push(escape);
-      			return;
+      		if (this.enemies[j] && this[this.enemies[j].name]) {
+	      		let i1 = i;
+	      		let i2 = j;
+	      		let v1 = v;
+	      		let a = v1.position.x - v2.position.x > 0 ? v1.position.x - v2.position.x : v2.position.x - v1.position.x;
+				let b = v1.position.y - v2.position.y;
+				let distance = Math.sqrt(a*a + b*b);
+	      		if (v.movementQ.length > 0 && v2.movementQ.length > 0 && 
+	      			distance < this.drawsize &&
+	      			v1.name !== v2.name) {
+	      			let vector = this[this.enemies[i].name].moveTo.vector > v2.position.x ? this.enemysize : -this.enemysize;
+	      			let escape = {axis: this[this.enemies[i].name].moveTo.axis, vector: vector/2};
+	      			this[this.enemies[i].name].movementQ = [];
+	      			this[this.enemies[i].name].movementQ.push(escape);
+	      			return;
+	      		}
       		}
 		});
     };
@@ -243,8 +256,8 @@ module.exports = class Game {
  	playerHitDetection(tank, player) {
  	   let missile = tank.missile;
        if (player && missile) {
-	       	let a = missile.position.x - (player.position.x + this.drawsize/2);
-	        let b = missile.position.y - (player.position.y + this.drawsize/2);
+	       	let a = (missile.position.x+missile.size/2) - (player.position.x + this.drawsize/2);
+	        let b = (missile.position.y+missile.size/2) - (player.position.y + this.drawsize/2);
 	        let distance = Math.sqrt(a*a + b*b);
 	        if (distance < this.drawsize/2 ) {
 	            player.color = "yellow";
@@ -255,17 +268,20 @@ module.exports = class Game {
        }    
 	};
 
-	playerScoreDetection(tank, player) {
+	playerScoreDetection(index, tank, player) {
  	   let missile = player.missile;
        if (tank && missile) {
-	       	let a = missile.position.x - (tank.position.x + this.drawsize/2);
-	        let b = missile.position.y - (tank.position.y + this.drawsize/2);
+	       	let a = (missile.position.x+missile.size/2) - (tank.position.x + this.drawsize/2);
+	        let b = (missile.position.y+missile.size/2) - (tank.position.y + this.drawsize/2);
 	        let distance = Math.sqrt(a*a + b*b);
 	        if (distance < this.drawsize/2 ) {
+	        	this[player.name].missile = null;
 	            this[tank.name].color = 'white';
+	            this[tank.name] = null;
+	            this.enemies.splice(this.enemies.indexOf(tank), 1);
 	            console.log(tank.name + ' hit by ' + player.name);
-	            player.score += 1;
-	            this[player.name].missile = null;
+	            player.score += 1;         
+	           
 	        };
        }    
 	};
@@ -288,7 +304,7 @@ module.exports = class Game {
     obstaclesDestruction(tank, obstacle) {
         console.log('obstacle hit by ' + tank.name);
        	this[tank.name].missile = null;
-        this.obstacles[this.obstacles.indexOf(obstacle)] = null;
+        this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
     }
 
 }

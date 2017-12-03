@@ -63,19 +63,21 @@
         });
 
         socket.on('gamestart', function(gamestate){
-            //console.log(gamestate);
+            console.log(gamestate);
 
             context.clearRect(0, 0, canvas.width, canvas.height);
 
             for (let n = 0; n < gamestate.enemies.length; n++ ) {
-              let r = gamestate.enemies[n].drawsize;
-              let x = gamestate.enemies[n].position.x;
-              let y = gamestate.enemies[n].position.y;   
-              context.beginPath();
-              context.fillStyle = gamestate.enemies[n].color
-              context.fillRect(x,y,r,r);
+              if (!!gamestate.enemies[n]) {
+                let r = gamestate.enemies[n].drawsize;
+                let x = gamestate.enemies[n].position.x;
+                let y = gamestate.enemies[n].position.y;   
+                context.beginPath();
+                context.fillStyle = gamestate.enemies[n].color
+                context.fillRect(x,y,r,r);
+              }
 
-              if (!!gamestate.enemies[n].missile) {
+              if (!!gamestate.enemies[n] && !!gamestate.enemies[n].missile) {
                 let mr = gamestate.enemies[n].missile.size;
                 let mx = gamestate.enemies[n].missile.position.x;
                 let my = gamestate.enemies[n].missile.position.y;   
@@ -108,12 +110,12 @@
               context.fillStyle = gamestate.playerA.color;
               context.fillRect(playerAX,playerAY,playerASize,playerASize);
                if (!!gamestate.playerA.missile) {
-                let mr = gamestate.playerA.missile.size;
-                let mx = gamestate.playerA.missile.position.x;
-                let my = gamestate.playerA.missile.position.y;   
+                let amr = gamestate.playerA.missile.size;
+                let amx = gamestate.playerA.missile.position.x;
+                let amy = gamestate.playerA.missile.position.y;   
                 context.beginPath();
                 context.fillStyle = 'orange';
-                context.fillRect(mx,my,mr,mr);
+                context.fillRect(amx,amy,amr,amr);
               }
             }
 
