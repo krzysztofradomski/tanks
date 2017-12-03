@@ -169,8 +169,8 @@ module.exports = class Player {
                         this.position.y -= v2.y - this.position.y;
                     };
                    
-                    console.log('obstacle collision distance:');
-                    console.log(distance)
+                    //console.log('obstacle collision distance:');
+                    //console.log(distance)
                     return;
                 }
             };
@@ -184,9 +184,13 @@ module.exports = class Player {
                 var a = (this.missile.position.x+this.missile.size/2) -  (v2.x+v2.size/2);
                 var b = (this.missile.position.y+this.missile.size/2) - (v2.y+v2.size/2);
                 let distance = Math.sqrt(a*a + b*b);
+                if (distance < this.drawsize-this.missile.size && v2.on) {
+                   console.log('player suicide, game over');
+                }
                 if (distance < this.drawsize-this.missile.size) {
                     this.obstaclesDestruction(v2);
                 }
+                
             }
         });
 
@@ -195,7 +199,7 @@ module.exports = class Player {
     obstaclesDestruction(obstacle) {
         console.log('obstacle hit by player');
         this.missile = null;
-        this.obstacles[this.obstacles.indexOf(obstacle)] = null;
+        this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
     }
 
 

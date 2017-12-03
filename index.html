@@ -67,6 +67,15 @@
 
             context.clearRect(0, 0, canvas.width, canvas.height);
 
+            if (gamestate.eagle.on) {
+              let r = gamestate.eagle.size;
+              let x = gamestate.eagle.x;
+              let y = gamestate.eagle.y;   
+              context.beginPath();
+              context.fillStyle = gamestate.eagle.color
+              context.fillRect(x,y,r,r);
+            }
+
             for (let n = 0; n < gamestate.enemies.length; n++ ) {
               if (!!gamestate.enemies[n]) {
                 let r = gamestate.enemies[n].drawsize;
@@ -98,6 +107,16 @@
                 context.fillRect(x,y,r,r);
               }
             }
+
+            if (gamestate.eagle.on) {
+              let r = gamestate.eagle.size;
+              let x = gamestate.eagle.x;
+              let y = gamestate.eagle.y;   
+              context.beginPath();
+              context.fillStyle = gamestate.eagle.color
+              context.fillRect(x,y,r,r);
+            }
+            
             if (!!gamestate.playerA) {
               let lives = gamestate.playerA.lives;
               let score = gamestate.playerA.score;

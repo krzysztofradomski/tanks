@@ -13,8 +13,10 @@ To do list:
 - tank collision detection DONE
 - 2 players online mode DONE
 - tanks shooting DONE
-- player shooting
+- player shooting DONE
 - player lives DONE
-- player score
-- orzełek inmplementation
-- support for more than one game at a time 
+- player score DONE
+- orzełek inmplementation DONE
+- support for more than one game at a time
+- front end
+- optimizing hitboxes
