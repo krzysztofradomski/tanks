@@ -18,6 +18,7 @@ module.exports = class Player {
         this.missile = null;
         this.axis = '-y';
         this.vector = 25;
+        this.gameOver = false;
     }
 
     get info() {
@@ -186,6 +187,7 @@ module.exports = class Player {
                 let distance = Math.sqrt(a*a + b*b);
                 if (distance < this.drawsize-this.missile.size && v2.on) {
                    console.log('player suicide, game over');
+                   this.gameOver = true;
                 }
                 if (distance < this.drawsize-this.missile.size) {
                     this.obstaclesDestruction(v2);

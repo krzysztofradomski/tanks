@@ -3,20 +3,20 @@ let http = require('http').Server(app);
 let io = require('socket.io')(http);
 
 let port = process.env.PORT || 3000;
-// let admin = require("firebase-admin");
-// let serviceAccount = require("./key.json");
+let admin = require("firebase-admin");
+let serviceAccount = require("./key.json");
 let Game = require('./Game.js')
 let Tank = require('./Tank.js')
 let Player = require('./Player.js')
 
-// admin.initializeApp({
-//     credential: admin.credential.cert(serviceAccount),
-//     databaseURL: "https://tanks-c0fa6.firebaseio.com"
-// });
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: "https://tanks-c0fa6.firebaseio.com"
+});
 
-// //intialize firebase related data
-// let db = admin.database();
-// let ref = db.ref("/scores");
+//intialize firebase related data
+let db = admin.database();
+let ref = db.ref("/scores");
 
 app.get('/', (req, res) => {
   	res.sendFile(__dirname + '/index.html');
@@ -29,7 +29,7 @@ game.init();
 io.on('connection', (socket) => {
 	console.log('Connecting a new player.');
 	
-	game = game || new Game(io);
+	game = game || new Game(io, scores);
 	let player = game.createPlayer();
 
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
@@ -50,6 +50,9 @@ io.on('connection', (socket) => {
 	  	});
 	  	socket.on('gamereset', () => {
 	  		console.log('Game resetted.');
+	  		game[player.name] = null;
+	  		player = null;
+	  		player = game.createPlayer();
 		    game.reset();
 		
 	  	});
@@ -58,13 +61,20 @@ io.on('connection', (socket) => {
 		    game.stop();	    
 		    console.log('Deleting ' + player.name + '...');
 		    game[player.name] = null;
-		    //game = null;
-	 
+		    if ( game.PlayerA === null && game.PlayerB === null) {
+		    	game.reset();
+		    	setTimeout(() => {game.stop()},500);
+		    }
+		    //game = null; 
 	  	});
-
 	  	socket.on('keypressed', (key) => {
 	  		//console.log(key);
 	  		player.move(key);
+	  	});
+	  	socket.on('gameoverplayerdata', (name) => {
+	  		console.log('Game over data received. Player name: ' + name);
+		    game.publishScore(ref, name, player);
+		
 	  	});
 	} else if (player === 'Player limit') {
 		console.log('Too many players.');

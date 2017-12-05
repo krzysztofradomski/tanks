@@ -170,7 +170,7 @@ module.exports = class Tank {
                     y: position.y+this.drawsize/2
                     
                 },
-                vector: vector * 2,
+                vector: vector * 1.5,
                 axis: axis
             };
             

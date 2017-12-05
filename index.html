@@ -3,11 +3,13 @@
   <head>
     <title>Tanks Online</title>
     <style>
-      body {background-color: grey}
+      body {background-color: grey;}
+      * { font-family: monospace;}
       button {color: white; background-color: black; border:1px solid white; padding: 10px; margin: 10px; }
       button:hover:enabled, button:active:enabled {border: 2px solid white; cursor: pointer;}
       canvas {width: 500px; display: block; margin-left: auto; margin-right: auto; background-color: black; border:1px solid white;}
       controls {width: 500px; display: block; margin-left: auto; margin-right: auto; }
+      gameover h2 {position: absolute; top: -1000px; width: 95%;  margin-left: auto; margin-right: auto; text-align: center; transition: top 2s;     font-size: 150px; text-shadow: 2px 2px 2px black; color: white;}
     </style>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
@@ -30,6 +32,9 @@
       <p>PlayerB Lives: <span class="livesValue"></span></p>
     </playerB>
    </stats>
+   <gameover>
+    <h2>GAME OVER</h2>
+   </gameover>
     <script>
       $(function () {
         let socket = io();
@@ -53,6 +58,11 @@
         $('#reset').click(function(){
           context.clearRect(0, 0, canvas.width, canvas.height);
           socket.emit('gamereset');
+          $("#start").attr("disabled", false);
+          $("#stop").attr("disabled", false);
+          $("#reset").attr("disabled", false);
+           $("gameover h2").css('display', "none");
+          $("gameover h2").css('top', "-1000px");
           return false;
         });
 
@@ -60,14 +70,18 @@
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
           $("#reset").attr("disabled", false);
+          $("gameover h2").css('display', "none");
+          $("gameover h2").css('top', "-1000px");
         });
 
         socket.on('gamestart', function(gamestate){
-            console.log(gamestate);
+            //console.log(gamestate);
+         
+           
 
             context.clearRect(0, 0, canvas.width, canvas.height);
 
-            if (gamestate.eagle.on) {
+            if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
               let y = gamestate.eagle.y;   
@@ -108,7 +122,7 @@
               }
             }
 
-            if (gamestate.eagle.on) {
+            if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
               let y = gamestate.eagle.y;   
@@ -149,12 +163,32 @@
               context.beginPath();  
               context.fillStyle = gamestate.playerB.color;
               context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
+               if (!!gamestate.playerB.missile) {
+                let amr = gamestate.playerB.missile.size;
+                let amx = gamestate.playerB.missile.position.x;
+                let amy = gamestate.playerB.missile.position.y;   
+                context.beginPath();
+                context.fillStyle = 'orange';
+                context.fillRect(amx,amy,amr,amr);
+              }
             }
-           
-            
 
+        });
 
-
+        socket.on('gameover', function(){
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          $("#start").attr("disabled", true);
+          $("#stop").attr("disabled", true);
+          $("#reset").attr("disabled", false);
+          setTimeout(function(){
+           $("gameover h2").css('top', "100px");
+          }, 200)
+          $("gameover h2").css('display', "block");
+          
+          setTimeout(function(){
+            let playerName = prompt("Please enter your name", "Player Unknown");
+            socket.emit('gameoverplayerdata', playerName);
+          }, 2200)
         });
         
       });

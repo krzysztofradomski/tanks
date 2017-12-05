@@ -4,7 +4,7 @@ let ObstacleSets = require('./ObstacleSets.js');
 let Bunker = require('./Bunker.js');
 
 module.exports = class Game {
-    constructor(io) {
+    constructor(io, fb) {
         this.io = io;
         this.enemysize = 50;
         this.drawsize = 25;
@@ -18,15 +18,10 @@ module.exports = class Game {
         this.enemiesLimit = 5;
         this.sandbox = { x: 500, y: 500 };
         this.obstacles = [];
-        this.eagle = {
-        	on: true,
-        	size: 25,
-        	x: 250,
-        	y: 475,
-        	color: 'grey'
-        }
+        this.eagle = null;
         this.PlayerA = null;
         this.PlayerB = null;
+        this.firebase = fb;
     };
 
     init() {
@@ -132,6 +127,13 @@ module.exports = class Game {
     }
 
     drawEagle() {
+	this.eagle = {
+    	on: true,
+    	size: 25,
+    	x: 250,
+    	y: 475,
+    	color: 'grey'
+    }
 	this.obstacles.push(this.eagle);
     }
 
@@ -141,12 +143,15 @@ module.exports = class Game {
 
     reset() {
         if (this) {
+
             this.on = false;
             this.enemycount = 0;
             this.enemies = [];
             this.obstacles = [];
             this.init();
-            this.PlayerA.reset(this.obstacles);
+           if (this.PlayerA) {
+        		this.PlayerA.reset(this.obstacles);
+        	};
         	if (this.PlayerB) {
         		this.PlayerB.reset(this.obstacles);
         	};
@@ -162,11 +167,15 @@ module.exports = class Game {
         if (this && !this.on) {
             this.on = true;
             this.running = setInterval(() => {
+            	if (this.PlayerA.gameOver) this.gameOver();
+            	if (this.PlayerA.lives <= 0) this.gameOver();
 	            if (!!this.PlayerA) {
-	      					this.PlayerA.shooting();      					
+	      			this.PlayerA.shooting();
+	      			if (this.PlayerA.gameOver) this.gameOver()     					
   				}
   				if (!!this.PlayerB) {
   					this.PlayerB.shooting();
+  					if (this.PlayerB.gameOver) this.gameOver()
   				}
   				if (Date.now() % 11 === 0 ) {
   					this.createEnemy();	
@@ -322,8 +331,7 @@ module.exports = class Game {
                 if (distance < tank.drawsize-tank.missile.size) {
                     this.obstaclesDestruction(tank, v2);
                 }
-                if (distance < tank.drawsize-tank.missile.size && v2.on) {
-                   this.stop();
+                if (distance < tank.drawsize-tank.missile.size && v2.on) {          
                    this.gameOver();
                 }
             }
@@ -337,8 +345,37 @@ module.exports = class Game {
         this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
     }
 
-    gameOver() {
-    	 console.log('game over');
+    gameOver() {    	 
+    	this.stop();
+	    this.on = false;
+        this.enemycount = 0;
+        this.enemies = [];
+        this.obstacles = [];
+        this.PlayerA = null;
+        this.PlayerB = null;
+        this.eagle = null;
+    	console.log('Game Over');
+    	this.io.emit('gameover');
+    	 //this.publishScore();  	 	 
+    }
+
+    gameOverClient() {
+    }
+
+    publishScore(firebase, nickname, player) {
+    	if (!!nickname) {
+    		let name = nickname;
+	    	let score = player.score;
+	    	let date = new Date(Date.now()).toLocaleTimeString() + ' on ' + new Date(Date.now()).toLocaleDateString();
+	    	firebase.push({
+				  [name]: {
+				    name: name,
+				    score: score,
+				    date: date
+				  }
+			});
+			console.log('Publishing data to firebase: ' + name + ' ' + score + ' ' + date)
+	    	}
     }
 
 }
