@@ -6,7 +6,6 @@ module.exports = class Player {
         this.level = config.level;
         this.lives = config.lives;
         this.score = config.score;
-        this.speed = config.speed; //ile ruchu naraz
         this.origin = config.origin;
         this.position = config.position;
         this.color = config.color;
@@ -29,7 +28,6 @@ module.exports = class Player {
                     lives: this.lives,
                     score: this.score,
                     color: this.color, 
-                    speed: this.speed, 
                     origin: this.origin,
                     position: this.position 
                     }

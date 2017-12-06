@@ -5,9 +5,35 @@
     <style>
       body {background-color: grey;}
       * { font-family: monospace;}
-      button {color: white; background-color: black; border:1px solid white; padding: 10px; margin: 10px; }
+      button {color: white; background-color: black; border:1px solid white; padding: 5px; margin: 5px; margin-bottom: 5px;  }
       button:hover:enabled, button:active:enabled {border: 2px solid white; cursor: pointer;}
       canvas {width: 500px; display: block; margin-left: auto; margin-right: auto; background-color: black; border:1px solid white;}
+      stats, topscores  {
+            display: block;
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+      }
+      stats > * {
+        width: 49%;
+        margin-right: 0;
+        margin-left: 0;
+        display: inline-block;;
+      }
+      playera {
+        text-align: left;
+      }
+      playerb {
+        text-align: right;
+      }
+      stats > * > p, topscores > p{
+       background: black;
+    padding: 5px;
+    color: white;
+    }
+    body {margin: 0;}
+
+
       controls {width: 500px; display: block; margin-left: auto; margin-right: auto; }
       gameover h2 {position: absolute; top: -1000px; width: 95%;  margin-left: auto; margin-right: auto; text-align: center; transition: top 2s;     font-size: 150px; text-shadow: 2px 2px 2px black; color: white;}
     </style>
@@ -15,14 +41,8 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
   <body>
-    <canvas id="myCanvas" width="500" height="500"></canvas>
-    <br>
-    <controls>
-     <button  type="button" disabled id="start">Start</button>
-     <button  type="button" disabled id="stop">Stop</button>
-     <button  type="button" disabled id="reset">Reset</button>
-   </controls>
-   <stats>
+    <img id="testimage" src="https://www.spriters-resource.com/resources/sheets/57/60016.png" style="display: none">
+    <stats>
     <playerA>
       <p>PlayerA Score: <span class="scoreValue"></span></p>
       <p>PlayerA Lives: <span class="livesValue"></span></p>
@@ -32,15 +52,37 @@
       <p>PlayerB Lives: <span class="livesValue"></span></p>
     </playerB>
    </stats>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <controls>
+     <button  type="button" disabled id="start">Start</button>
+     <button  type="button" disabled id="stop">Stop</button>
+     <button  type="button" disabled id="reset">Reset</button>
+   </controls> 
    <gameover>
     <h2>GAME OVER</h2>
    </gameover>
+   <topscores>
+    <p>Top scores: </p>
+    <p>Top scores: </p>
+    <p>Top scores: </p>
+   </topscores>
     <script>
       $(function () {
-        let socket = io();
+        let sprites = new Image();
+        sprites.src = "https://www.spriters-resource.com/resources/sheets/57/60016.png";
+        
+        
         let canvas = document.getElementById('myCanvas');
         let context = canvas.getContext('2d');
         let clean = {x:0,y:0};
+
+        let socket = io();
+
+        function drawScores(data) {
+          for (let j = 0; j < 3; j++) {
+            document.querySelectorAll("topscores p")[j].textContent = "Top scores: " + data[j];
+          }
+        }
 
         document.onkeydown = function (e) {
             e = e || window.event;
@@ -95,9 +137,10 @@
                 let r = gamestate.enemies[n].drawsize;
                 let x = gamestate.enemies[n].position.x;
                 let y = gamestate.enemies[n].position.y;   
-                context.beginPath();
-                context.fillStyle = gamestate.enemies[n].color
-                context.fillRect(x,y,r,r);
+                // context.beginPath();
+                // context.fillStyle = gamestate.enemies[n].color
+                // context.fillRect(x,y,r,r);
+                context.drawImage(sprites, 130,0,15,15,x, y,r,r);
               }
 
               if (!!gamestate.enemies[n] && !!gamestate.enemies[n].missile) {
@@ -105,7 +148,7 @@
                 let mx = gamestate.enemies[n].missile.position.x;
                 let my = gamestate.enemies[n].missile.position.y;   
                 context.beginPath();
-                context.fillStyle = 'white';
+                context.fillStyle = 'grey';
                 context.fillRect(mx,my,mr,mr);
               }
 
@@ -116,9 +159,10 @@
                 let r = gamestate.obstacles[n].size;
                 let x = gamestate.obstacles[n].x;
                 let y = gamestate.obstacles[n].y;   
-                context.beginPath();
-                context.fillStyle = 'saddlebrown';
-                context.fillRect(x,y,r,r);
+                //context.beginPath();
+                //context.fillStyle = 'saddlebrown';
+                //context.fillRect(x,y,r,r);
+                context.drawImage(sprites, 256,0,15,15,x, y,r,r);
               }
             }
 
@@ -126,9 +170,10 @@
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
               let y = gamestate.eagle.y;   
-              context.beginPath();
-              context.fillStyle = gamestate.eagle.color
-              context.fillRect(x,y,r,r);
+              // context.beginPath();
+              // context.fillStyle = gamestate.eagle.color
+              // context.fillRect(x,y,r,r);
+              context.drawImage(sprites, 305,32,15,15,x, y,r,r);
             }
             
             if (!!gamestate.playerA) {
@@ -139,11 +184,13 @@
               let playerASize = gamestate.playerA.drawsize
               let playerAX = gamestate.playerA.position.x;
               let playerAY = gamestate.playerA.position.y;  
-              context.beginPath();  
-              context.fillStyle = gamestate.playerA.color;
-              context.fillRect(playerAX,playerAY,playerASize,playerASize);
+              //context.beginPath();  
+              //context.fillStyle = gamestate.playerA.color;
+              //context.fillRect(playerAX,playerAY,playerASize,playerASize);
+              context.drawImage(sprites, 0,0,15,15,playerAX, playerAY,playerASize,playerASize);
+
                if (!!gamestate.playerA.missile) {
-                let amr = gamestate.playerA.missile.size;
+                let amr = gamestate.playerA.missile.size/2;
                 let amx = gamestate.playerA.missile.position.x;
                 let amy = gamestate.playerA.missile.position.y;   
                 context.beginPath();
@@ -164,7 +211,7 @@
               context.fillStyle = gamestate.playerB.color;
               context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
                if (!!gamestate.playerB.missile) {
-                let amr = gamestate.playerB.missile.size;
+                let amr = gamestate.playerB.missile.size/2;
                 let amx = gamestate.playerB.missile.position.x;
                 let amy = gamestate.playerB.missile.position.y;   
                 context.beginPath();
@@ -175,7 +222,7 @@
 
         });
 
-        socket.on('gameover', function(){
+        socket.on('gameover', function(topscoresdata){
           context.clearRect(0, 0, canvas.width, canvas.height);
           $("#start").attr("disabled", true);
           $("#stop").attr("disabled", true);
@@ -184,7 +231,7 @@
            $("gameover h2").css('top', "100px");
           }, 200)
           $("gameover h2").css('display', "block");
-          
+          drawScores(topscoresdata);
           setTimeout(function(){
             let playerName = prompt("Please enter your name", "Player Unknown");
             socket.emit('gameoverplayerdata', playerName);

@@ -29,8 +29,9 @@ game.init();
 io.on('connection', (socket) => {
 	console.log('Connecting a new player.');
 	
-	game = game || new Game(io, scores);
+	game = game || new Game(io, ref);
 	let player = game.createPlayer();
+	game.checkTopScores(ref);
 
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
@@ -53,6 +54,7 @@ io.on('connection', (socket) => {
 	  		game[player.name] = null;
 	  		player = null;
 	  		player = game.createPlayer();
+	  		game.checkTopScores(ref);
 		    game.reset();
 		
 	  	});

@@ -11,7 +11,7 @@ module.exports = class Game {
         this.obstaclesize = 25;
         this.on = false;
         this.refreshRate = 1000 / 25;
-        this.tankspeed = 1; //speed multiplier, up to 5.
+        this.tankspeed = 4; ///enemy tank speed, best if 3-5
         this.running;
         this.enemies = [];
         this.enemycount = 0;
@@ -22,6 +22,7 @@ module.exports = class Game {
         this.PlayerA = null;
         this.PlayerB = null;
         this.firebase = fb;
+        this.topScores = [];
     };
 
     init() {
@@ -29,7 +30,8 @@ module.exports = class Game {
         this.createObstacles();
     	this.createEnemies();
     	//this.io.emit('ready');
-    	console.log('Game initialised.')
+    	console.log('Game initialised.');
+    	
     }
 
     createPlayer() {
@@ -38,7 +40,6 @@ module.exports = class Game {
 	    		level: 1,
 	    		lives: 5,
 	    		score: 0,
-	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 50, y: 480},
 	    		position: {x: 50, y: 480},
 	    		color: 'green'
@@ -48,7 +49,6 @@ module.exports = class Game {
 	    		level: 1,
 	    		lives: 5,
 	    		score: 0,
-	    		speed: 5 * this.tankspeed,
 	    		origin: {x: 450, y: 480},
 	    		position: {x: 450, y: 480},
 	    		color: 'blue'
@@ -80,7 +80,7 @@ module.exports = class Game {
 	    		name: enemyName,
 	    		level: 1,
 	    		lives: 1,
-	    		speed: 5,
+	    		speed: this.tankspeed,
 	    		origin: {x: x, y: y},
 	    		position: {x: x, y: y},
 	    		on: false
@@ -143,7 +143,6 @@ module.exports = class Game {
 
     reset() {
         if (this) {
-
             this.on = false;
             this.enemycount = 0;
             this.enemies = [];
@@ -355,11 +354,35 @@ module.exports = class Game {
         this.PlayerB = null;
         this.eagle = null;
     	console.log('Game Over');
-    	this.io.emit('gameover');
+    	this.io.emit('gameover', this.topScores);
     	 //this.publishScore();  	 	 
     }
 
     gameOverClient() {
+    }
+
+	 checkTopScores(firebase) {
+	 	this.topScores = [];
+	    firebase.once("value").then( (snapshot) => {
+		    let db = snapshot.val();
+		    let keys = Object.keys(db);
+		    let scores = [];
+		    let score = [];
+		    for (let i = 0; i < keys.length; i++) {
+		        score.push(db[keys[i]].name, db[keys[i]].score, db[keys[i]].date);
+		        scores.push(score);
+		        score = [];
+		    };
+			scores
+			    .sort(function(a, b) {
+			      return a[1] - b[1];
+			    })
+			    .reverse();
+			for (let j = 0; j < 3; j++) {
+			    this.topScores.push("Name: " + scores[j][0] + ", score: " + scores[j][1] + ", date: " + scores[j][2])	   
+			};
+		})
+		
     }
 
     publishScore(firebase, nickname, player) {
@@ -367,14 +390,14 @@ module.exports = class Game {
     		let name = nickname;
 	    	let score = player.score;
 	    	let date = new Date(Date.now()).toLocaleTimeString() + ' on ' + new Date(Date.now()).toLocaleDateString();
-	    	firebase.push({
-				  [name]: {
-				    name: name,
-				    score: score,
-				    date: date
-				  }
-			});
+	    	let data = {
+			    name: name,
+			    score: score,
+			    date: date
+			};
+	    	firebase.push(data);
 			console.log('Publishing data to firebase: ' + name + ' ' + score + ' ' + date)
+			console.log('this.topScores: ' + this.topScores);
 	    	}
     }
 
