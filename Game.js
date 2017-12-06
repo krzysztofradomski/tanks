@@ -99,7 +99,7 @@ module.exports = class Game {
     	}
     		// console.log('enemies = ');
 	    	// console.log(this.enemies);
-	    	console.log('enemies number = ' + this.enemies.length);
+	    	console.log('Max allowed number of enemies = ' + this.enemies.length);
     }
 
     obstaclesGenerator() {
@@ -397,7 +397,7 @@ module.exports = class Game {
 			};
 	    	firebase.push(data);
 			console.log('Publishing data to firebase: ' + name + ' ' + score + ' ' + date)
-			console.log('this.topScores: ' + this.topScores);
+			//console.log('this.topScores: ' + this.topScores);
 	    	}
     }
 

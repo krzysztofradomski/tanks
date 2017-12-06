@@ -74,9 +74,10 @@ io.on('connection', (socket) => {
 	  		player.move(key);
 	  	});
 	  	socket.on('gameoverplayerdata', (name) => {
-	  		console.log('Game over data received. Player name: ' + name);
-		    game.publishScore(ref, name, player);
-		
+	  		console.log(name ? 'Game over data received. Player name: ' + name : "Game over data received. No player name, not saving any data.");
+		    if (name) {
+		    	game.publishScore(ref, name, player);
+		    };	
 	  	});
 	} else if (player === 'Player limit') {
 		console.log('Too many players.');
