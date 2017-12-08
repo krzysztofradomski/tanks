@@ -379,7 +379,7 @@ module.exports = class Game {
 			    })
 			    .reverse();
 			for (let j = 0; j < 3; j++) {
-			    this.topScores.push("Name: " + scores[j][0] + ", score: " + scores[j][1] + ", date: " + scores[j][2])	   
+			    this.topScores.push("Name: " + scores[j][0] + ", score: " + scores[j][1] + " points, date: " + scores[j][2])	   
 			};
 		})
 		
@@ -389,7 +389,7 @@ module.exports = class Game {
     	if (!!nickname) {
     		let name = nickname;
 	    	let score = player.score;
-	    	let date = new Date(Date.now()).toLocaleTimeString() + ' on ' + new Date(Date.now()).toLocaleDateString();
+	    	let date = new Date(Date.now()).toLocaleDateString();
 	    	let data = {
 			    name: name,
 			    score: score,

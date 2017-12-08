@@ -33,6 +33,7 @@ module.exports = class Tank {
                 enemysize: this.enemysize,
                 drawsize: this.drawsize,
                 movementQ: this.movementQ,
+                moveto: this.moveTo,
                 missile: this.missile,
                 color: this.color
             }

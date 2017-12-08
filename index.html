@@ -5,8 +5,8 @@
     <style>
       body {background-color: grey;}
       * { font-family: monospace;}
-      button {color: white; background-color: black; border:1px solid white; padding: 5px; margin: 5px; margin-bottom: 5px;  }
-      button:hover:enabled, button:active:enabled {border: 2px solid white; cursor: pointer;}
+      button {color: white; background-color: black; border:1px solid black; padding: 5px; margin: 5px; margin-left: 0; margin-bottom: 5px;  }
+      button:hover:enabled, button:active:enabled {border: 1px solid white; cursor: pointer;}
       canvas {width: 500px; display: block; margin-left: auto; margin-right: auto; background-color: black; border:1px solid white;}
       stats, topscores  {
             display: block;
@@ -57,19 +57,32 @@
      <button  type="button" disabled id="start">Start</button>
      <button  type="button" disabled id="stop">Stop</button>
      <button  type="button" disabled id="reset">Reset</button>
+     Movement - arrows (⇦ ⇨ ⇧ ⇩), shooting - 'Q'.
    </controls> 
    <gameover>
     <h2>GAME OVER</h2>
    </gameover>
    <topscores>
-    <p>Top scores: </p>
-    <p>Top scores: </p>
-    <p>Top scores: </p>
+    <p>1st place: </p>
+    <p>2nd place: </p>
+    <p>3rd place: </p>
    </topscores>
     <script>
       $(function () {
         let sprites = new Image();
         sprites.src = "https://www.spriters-resource.com/resources/sheets/57/60016.png";
+        let enemyTanksPositions = {
+          'x': 240,
+          '-x': 162,
+          'y': 210,
+          '-y': 130
+        };
+        let playerPositions = {
+          'x': 95,
+          '-x': 50,
+          'y': 65,
+          '-y': 0
+        }
         
         
         let canvas = document.getElementById('myCanvas');
@@ -80,7 +93,8 @@
 
         function drawScores(data) {
           for (let j = 0; j < 3; j++) {
-            document.querySelectorAll("topscores p")[j].textContent = "Top scores: " + data[j];
+            let suffix = j === 0 ? 'st' : j === 1 ? 'nd' : 'rd';
+            document.querySelectorAll("topscores p")[j].textContent = (j+1) + suffix + " place: " + data[j];
           }
         }
 
@@ -117,7 +131,7 @@
         });
 
         socket.on('gamestart', function(gamestate){
-            //console.log(gamestate);
+            console.log(gamestate.playerA);
          
            
 
@@ -136,11 +150,13 @@
               if (!!gamestate.enemies[n]) {
                 let r = gamestate.enemies[n].drawsize;
                 let x = gamestate.enemies[n].position.x;
-                let y = gamestate.enemies[n].position.y;   
+                let y = gamestate.enemies[n].position.y;
+            
+                let pos = (gamestate.enemies[n].moveto.vector > 0 ? '' : '-') + gamestate.enemies[n].moveto.axis
                 // context.beginPath();
                 // context.fillStyle = gamestate.enemies[n].color
                 // context.fillRect(x,y,r,r);
-                context.drawImage(sprites, 130,0,15,15,x, y,r,r);
+                context.drawImage(sprites, enemyTanksPositions[pos],0,15,15, x, y, r, r);
               }
 
               if (!!gamestate.enemies[n] && !!gamestate.enemies[n].missile) {
@@ -183,11 +199,12 @@
               $('stats playerA .livesValue').text(lives);
               let playerASize = gamestate.playerA.drawsize
               let playerAX = gamestate.playerA.position.x;
-              let playerAY = gamestate.playerA.position.y;  
+              let playerAY = gamestate.playerA.position.y;
+              let pos = gamestate.playerA.axis;
               //context.beginPath();  
               //context.fillStyle = gamestate.playerA.color;
               //context.fillRect(playerAX,playerAY,playerASize,playerASize);
-              context.drawImage(sprites, 0,0,15,15,playerAX, playerAY,playerASize,playerASize);
+              context.drawImage(sprites, playerPositions[pos],0,15,15,playerAX, playerAY,playerASize,playerASize);
 
                if (!!gamestate.playerA.missile) {
                 let amr = gamestate.playerA.missile.size/2;
@@ -233,7 +250,10 @@
           $("gameover h2").css('display', "block");
           drawScores(topscoresdata);
           setTimeout(function(){
-            let playerName = prompt("Please enter your name", "Player Unknown");
+            let playerName = prompt("Please enter your name (max 10 characters):", "Player Unknown");
+            if (!!playerName) {
+              playerName = playerName.length > 10 ? playerName.slice(0,10) + '...' : playerName;
+            }
             socket.emit('gameoverplayerdata', playerName);
           }, 2200)
         });
