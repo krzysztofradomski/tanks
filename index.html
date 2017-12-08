@@ -77,7 +77,13 @@
           'y': 210,
           '-y': 130
         };
-        let playerPositions = {
+        let playerAPositions = {
+          'x': 95,
+          '-x': 50,
+          'y': 65,
+          '-y': 0
+        };
+        let playerBPositions = {
           'x': 95,
           '-x': 50,
           'y': 65,
@@ -92,9 +98,11 @@
         let socket = io();
 
         function drawScores(data) {
+          //console.log(data);
           for (let j = 0; j < 3; j++) {
             let suffix = j === 0 ? 'st' : j === 1 ? 'nd' : 'rd';
-            document.querySelectorAll("topscores p")[j].textContent = (j+1) + suffix + " place: " + data[j];
+            let text = data.length > 0 ? (j+1) + suffix + " place: " + data[j] + '.' : (j+1) + suffix + " place: " + "No internet connection!"; 
+            document.querySelectorAll("topscores p")[j].textContent = text;
           }
         }
 
@@ -131,7 +139,7 @@
         });
 
         socket.on('gamestart', function(gamestate){
-            console.log(gamestate.playerA);
+            //console.log(gamestate.playerA);
          
            
 
@@ -204,7 +212,7 @@
               //context.beginPath();  
               //context.fillStyle = gamestate.playerA.color;
               //context.fillRect(playerAX,playerAY,playerASize,playerASize);
-              context.drawImage(sprites, playerPositions[pos],0,15,15,playerAX, playerAY,playerASize,playerASize);
+              context.drawImage(sprites, playerAPositions[pos],0,15,15,playerAX, playerAY,playerASize,playerASize);
 
                if (!!gamestate.playerA.missile) {
                 let amr = gamestate.playerA.missile.size/2;
@@ -223,10 +231,9 @@
               $('stats playerB .livesValue').text(lives);
               let playerBSize = gamestate.playerB.drawsize
               let playerBX = gamestate.playerB.position.x;
-              let playerBY = gamestate.playerB.position.y;  
-              context.beginPath();  
-              context.fillStyle = gamestate.playerB.color;
-              context.fillRect(playerBX,playerBY,playerBSize,playerBSize);
+              let playerBY = gamestate.playerB.position.y; 
+               let pos = gamestate.playerB.axis; 
+               context.drawImage(sprites, playerBPositions[pos],130,15,15,playerBX,playerBY,playerBSize,playerBSize);
                if (!!gamestate.playerB.missile) {
                 let amr = gamestate.playerB.missile.size/2;
                 let amx = gamestate.playerB.missile.position.x;
@@ -250,9 +257,9 @@
           $("gameover h2").css('display', "block");
           drawScores(topscoresdata);
           setTimeout(function(){
-            let playerName = prompt("Please enter your name (max 10 characters):", "Player Unknown");
+            let playerName = prompt("Please enter your name (max 15 characters):", "Player Unknown");
             if (!!playerName) {
-              playerName = playerName.length > 10 ? playerName.slice(0,10) + '...' : playerName;
+              playerName = playerName.length > 15 ? playerName.slice(0,15) + '...' : playerName;
             }
             socket.emit('gameoverplayerdata', playerName);
           }, 2200)

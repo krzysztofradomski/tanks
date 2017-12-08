@@ -36,6 +36,7 @@ module.exports = class Player {
     }
 
     move(key) {
+        
         switch (key) {
             case 'q':
                 this.loading();
@@ -67,9 +68,6 @@ module.exports = class Player {
         if (this.position.y < 0) {this.position.y = 0};
         this.obstaclesCollisionDetection();
     }
-
-    generateMovement() {         
-    } 
 
     reset(obst) {
          if (this.name) {
