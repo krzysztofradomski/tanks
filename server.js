@@ -21,17 +21,32 @@ let ref = db.ref("/scores");
 app.get('/', (req, res) => {
   	res.sendFile(__dirname + '/index.html');
 });
-
-let game = new Game(io);
-
+let counter = 0;
+let games = [];
+games[counter] = new Game(io);
+game = games[counter];
 game.init();
 
+console.log('Game nr ' + counter + ' ' + 'created.');
+
 io.on('connection', (socket) => {
-	console.log('Connecting a new player.');
+	console.log('Connecting a new player to game nr ' + counter);
 	
-	game = game || new Game(io, ref);
-	let player = game.createPlayer();
-	game.checkTopScores(ref);
+	game = games[counter];
+	let player =  games[counter].createPlayer();
+	games[counter].checkTopScores(ref);
+
+	if (player === 'Player limit') {
+		console.log('Too many players.');
+		console.log('Creating new game...');
+		counter = counter + 1;
+		game = new Game(io);
+		games[counter] = new Game(io);
+		game = games[counter];
+		game.init();		
+		console.log('Game nr ' + counter + ' ' + 'created.');
+		player =  games[counter].createPlayer();
+	}
 
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
@@ -64,10 +79,11 @@ io.on('connection', (socket) => {
 		    console.log('Deleting ' + player.name + '...');
 		    game[player.name] = null;
 		    if ( game.PlayerA === null && game.PlayerB === null) {
-		    	game.reset();
+		    	//game.reset();
+		    	//game = null;
 		    	setTimeout(() => {game.stop()},500);
 		    }
-		    //game = null; 
+		     
 	  	});
 	  	socket.on('keypressed', (key) => {
 	  		//console.log(key);
@@ -79,9 +95,7 @@ io.on('connection', (socket) => {
 		    	game.publishScore(ref, name, player);
 		    };	
 	  	});
-	} else if (player === 'Player limit') {
-		console.log('Too many players.');
-	}
+	} 
 
 });
 

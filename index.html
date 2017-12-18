@@ -88,29 +88,28 @@
           '-x': 50,
           'y': 65,
           '-y': 0
-        }
-        
+        };
+        let enemyExplosionPosition = {
+          'x': -50,
+          'y': -50
+        };
         
         let canvas = document.getElementById('myCanvas');
         let context = canvas.getContext('2d');
-        let clean = {x:0,y:0};
-
         let socket = io();
-
         function drawScores(data) {
           //console.log(data);
           for (let j = 0; j < 3; j++) {
             let suffix = j === 0 ? 'st' : j === 1 ? 'nd' : 'rd';
-            let text = data.length > 0 ? (j+1) + suffix + " place: " + data[j] + '.' : (j+1) + suffix + " place: " + "No internet connection!"; 
+            let text = typeof data[j] !== 'undefined' ? (j+1) + suffix + " place: " + data[j] + '.' : (j+1) + suffix + " place: " + "No data available."; 
+            //console.log(text);
             document.querySelectorAll("topscores p")[j].textContent = text;
           }
         }
-
         document.onkeydown = function (e) {
             e = e || window.event;
             socket.emit('keypressed', e.key)
         };
-
         $('#start').click(function(){
           socket.emit('gamestart');
           return false;
@@ -129,7 +128,6 @@
           $("gameover h2").css('top', "-1000px");
           return false;
         });
-
         socket.on('ready', function(){
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
@@ -137,14 +135,11 @@
           $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
         });
-
         socket.on('gamestart', function(gamestate){
             //console.log(gamestate.playerA);
          
            
-
             context.clearRect(0, 0, canvas.width, canvas.height);
-
             if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
@@ -153,7 +148,6 @@
               context.fillStyle = gamestate.eagle.color
               context.fillRect(x,y,r,r);
             }
-
             for (let n = 0; n < gamestate.enemies.length; n++ ) {
               if (!!gamestate.enemies[n]) {
                 let r = gamestate.enemies[n].drawsize;
@@ -165,8 +159,8 @@
                 // context.fillStyle = gamestate.enemies[n].color
                 // context.fillRect(x,y,r,r);
                 context.drawImage(sprites, enemyTanksPositions[pos],0,15,15, x, y, r, r);
+                context.drawImage(sprites,255,130,15,15,enemyExplosionPosition.x,enemyExplosionPosition.y,25,25);
               }
-
               if (!!gamestate.enemies[n] && !!gamestate.enemies[n].missile) {
                 let mr = gamestate.enemies[n].missile.size;
                 let mx = gamestate.enemies[n].missile.position.x;
@@ -175,9 +169,7 @@
                 context.fillStyle = 'grey';
                 context.fillRect(mx,my,mr,mr);
               }
-
             }
-
             for (let n = 0; n < gamestate.obstacles.length; n++ ) {
               if (gamestate.obstacles[n]) {
                 let r = gamestate.obstacles[n].size;
@@ -189,7 +181,6 @@
                 context.drawImage(sprites, 256,0,15,15,x, y,r,r);
               }
             }
-
             if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
@@ -213,7 +204,8 @@
               //context.fillStyle = gamestate.playerA.color;
               //context.fillRect(playerAX,playerAY,playerASize,playerASize);
               context.drawImage(sprites, playerAPositions[pos],0,15,15,playerAX, playerAY,playerASize,playerASize);
-
+              enemyExplosionPosition = {'x': -50,'y': -50};
+        
                if (!!gamestate.playerA.missile) {
                 let amr = gamestate.playerA.missile.size/2;
                 let amx = gamestate.playerA.missile.position.x;
@@ -223,7 +215,6 @@
                 context.fillRect(amx,amy,amr,amr);
               }
             }
-
             if (!!gamestate.playerB) {
               let lives = gamestate.playerB.lives;
               let score = gamestate.playerB.score;
@@ -233,7 +224,7 @@
               let playerBX = gamestate.playerB.position.x;
               let playerBY = gamestate.playerB.position.y; 
                let pos = gamestate.playerB.axis; 
-               context.drawImage(sprites, playerBPositions[pos],130,15,15,playerBX,playerBY,playerBSize,playerBSize);
+               context.drawImage(sprites, playerBPositions[pos],129,15,15,playerBX,playerBY,playerBSize,playerBSize);
                if (!!gamestate.playerB.missile) {
                 let amr = gamestate.playerB.missile.size/2;
                 let amx = gamestate.playerB.missile.position.x;
@@ -243,9 +234,10 @@
                 context.fillRect(amx,amy,amr,amr);
               }
             }
-
         });
-
+        socket.on('scores', function(topscoresdata){   
+          drawScores(topscoresdata);
+        });
         socket.on('gameover', function(topscoresdata){
           context.clearRect(0, 0, canvas.width, canvas.height);
           $("#start").attr("disabled", true);
@@ -264,6 +256,11 @@
             socket.emit('gameoverplayerdata', playerName);
           }, 2200)
         });
+        socket.on('enemyExplosion', function(position){
+           enemyExplosionPosition = position;
+           context.drawImage(sprites,255,130,15,15,enemyExplosionPosition.x,enemyExplosionPosition.y,25,25);
+        });
+        
         
       });
     </script>
