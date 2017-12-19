@@ -283,7 +283,7 @@ module.exports = class Game {
 
 		if (distance < this.drawsize) {
 			player.color = "orange";
-			console.log(player.name + ' - ' + v.name + ' collision.');
+			//console.log(player.name + ' - ' + v.name + ' collision.');
 			player.lives -= 1;
  		}
  	};
@@ -296,7 +296,7 @@ module.exports = class Game {
 	        let distance = Math.sqrt(a*a + b*b);
 	        if (distance < this.drawsize/2 ) {
 	            player.color = "yellow";
-	            console.log(player.name + ' hit by ' + tank.name);
+	            //console.log(player.name + ' hit by ' + tank.name);
 	            player.lives -= 1;
 	            this[tank.name].missile = null;
 	        };
@@ -346,7 +346,7 @@ module.exports = class Game {
         this[tank.name].color = 'white';
         this[tank.name] = null;
         this.enemies.splice(this.enemies.indexOf(tank), 1);
-        console.log(tank.name + ' hit by ' + player.name);
+        //console.log(tank.name + ' hit by ' + player.name);
         player.score += 1;
 
     }

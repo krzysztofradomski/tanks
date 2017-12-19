@@ -40,7 +40,6 @@ io.on('connection', (socket) => {
 		console.log('Too many players.');
 		console.log('Creating new game...');
 		counter = counter + 1;
-		game = new Game(io);
 		games[counter] = new Game(io);
 		game = games[counter];
 		game.init();		
@@ -51,6 +50,7 @@ io.on('connection', (socket) => {
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
 		game.io.emit('ready');
+		game.io.emit('game-info', counter);
 		console.log('Sent game interface ready to ' + player.name + '.');
   		socket.on('gamestart', () => {
   		

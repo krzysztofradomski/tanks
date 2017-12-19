@@ -135,6 +135,9 @@
           $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
         });
+        socket.on('game-info', function(data){
+         console.log('game nr ' + data);
+        });
         socket.on('gamestart', function(gamestate){
             //console.log(gamestate.playerA);
          
