@@ -23,15 +23,19 @@ app.get('/', (req, res) => {
 });
 let counter = 0;
 let games = [];
-games[counter] = new Game(io);
-game = games[counter];
-game.init();
+// games[counter] = new Game(socket);
+// game = games[counter];
+// game.init();
 
 console.log('Game nr ' + counter + ' ' + 'created.');
 
 io.on('connection', (socket) => {
 	console.log('Connecting a new player to game nr ' + counter);
-	
+	if (!games[counter]) {
+		games[counter] = new Game(counter, socket);
+		game = games[counter];
+		game.init();
+	}
 	game = games[counter];
 	let player =  games[counter].createPlayer();
 	games[counter].checkTopScores(ref);
@@ -40,7 +44,7 @@ io.on('connection', (socket) => {
 		console.log('Too many players.');
 		console.log('Creating new game...');
 		counter = counter + 1;
-		games[counter] = new Game(io);
+		games[counter] = new Game(counter, socket);
 		game = games[counter];
 		game.init();		
 		console.log('Game nr ' + counter + ' ' + 'created.');
@@ -49,8 +53,9 @@ io.on('connection', (socket) => {
 
 	if (player.name === "PlayerA" || player.name === "PlayerB") {
 		console.log(player.name + ' connected.');
-		game.io.emit('ready');
-		game.io.emit('game-info', counter);
+		socket.join(counter);
+		game.io.to(counter).emit('ready');
+		game.io.to(counter).emit('game-info', counter);
 		console.log('Sent game interface ready to ' + player.name + '.');
   		socket.on('gamestart', () => {
   		

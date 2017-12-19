@@ -4,8 +4,8 @@ let ObstacleSets = require('./ObstacleSets.js');
 let Bunker = require('./Bunker.js');
 
 module.exports = class Game {
-    constructor(io, fb) {
-        this.io = io;
+    constructor(counter, socket, fb) {
+        this.io = socket;
         this.enemysize = 50;
         this.drawsize = 25;
         this.obstaclesize = 25;
@@ -23,6 +23,7 @@ module.exports = class Game {
         this.PlayerB = null;
         this.firebase = fb;
         this.topScores = [];
+        this.counter = counter;
     };
 
     init() {
@@ -206,7 +207,7 @@ module.exports = class Game {
 	                }
 	            };
       		})
-                this.io.emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB, eagle: this.eagle});
+                this.io.to(this.counter).emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB, eagle: this.eagle});
                 //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
             }, this.refreshRate)
@@ -341,7 +342,7 @@ module.exports = class Game {
     }
 
     killEnemyTank(tank, player) {
-    	this.io.emit('enemyExplosion', tank.position);
+    	this.io.to(this.counter).emit('enemyExplosion', tank.position);
     	this[player.name].missile = null;
         this[tank.name].color = 'white';
         this[tank.name] = null;
@@ -361,8 +362,8 @@ module.exports = class Game {
         this.PlayerB = null;
         this.eagle = null;
     	console.log('Game Over');
-    	this.io.emit('gameover', this.topScores);
-    	this.io.emit('scores', this.topScores);
+    	this.io.to(this.counter).emit('gameover', this.topScores);
+    	this.io.to(this.counter).emit('scores', this.topScores);
     	 //this.publishScore();  	 	 
     }
 
@@ -392,7 +393,7 @@ module.exports = class Game {
 				}
 			   
 			};
-			this.io.emit('scores', this.topScores);
+			this.io.to(this.counter).emit('scores', this.topScores);
 		})
 		
     }
