@@ -69,7 +69,7 @@
    </topscores>
     <script>
       $(function () {
-        setTimeout(function(){console.log(scoresData); if (scoresData === null) {console.log('needs reload')}; location.reload()}, 1000);
+        setTimeout(function(){console.log(scoresData); if (scoresData === null) {console.log('needs reload');location.reload();}}, 1000);
         let sprites = new Image();
         sprites.src = "https://www.spriters-resource.com/resources/sheets/57/60016.png";
         let enemyTanksPositions = {
