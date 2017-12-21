@@ -54,9 +54,9 @@
    </stats>
     <canvas id="myCanvas" width="500" height="500"></canvas>
     <controls>
-     <button  type="button" disabled id="start">Start</button>
-     <button  type="button" disabled id="stop">Stop</button>
-     <button  type="button" disabled id="reset">Reset</button>
+     <button  type="button" disabled id="start">Join game</button>
+     <!--<button  type="button" disabled id="stop">Stop</button>
+     <button  type="button" disabled id="reset">Reset</button>-->
      Movement - arrows (⇦ ⇨ ⇧ ⇩), shooting - 'Q'.
    </controls> 
    <gameover>
@@ -69,6 +69,7 @@
    </topscores>
     <script>
       $(function () {
+        setTimeout(function(){console.log(scoresData); if (scoresData === null) {console.log('needs reload')}; location.reload()}, 1000);
         let sprites = new Image();
         sprites.src = "https://www.spriters-resource.com/resources/sheets/57/60016.png";
         let enemyTanksPositions = {
@@ -93,12 +94,13 @@
           'x': -50,
           'y': -50
         };
-        
+        let scoresData = null;
         let canvas = document.getElementById('myCanvas');
         let context = canvas.getContext('2d');
         let socket = io();
         function drawScores(data) {
           //console.log(data);
+          scoresData = data;
           for (let j = 0; j < 3; j++) {
             let suffix = j === 0 ? 'st' : j === 1 ? 'nd' : 'rd';
             let text = typeof data[j] !== 'undefined' ? (j+1) + suffix + " place: " + data[j] + '.' : (j+1) + suffix + " place: " + "No data available."; 
@@ -112,6 +114,7 @@
         };
         $('#start').click(function(){
           socket.emit('gamestart');
+
           return false;
         });
         $('#stop').click(function(){
@@ -135,7 +138,7 @@
           $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
         });
-        socket.on('game-info', function(data){
+        socket.on('gameinfo', function(data){
          console.log('game nr ' + data);
         });
         socket.on('gamestart', function(gamestate){

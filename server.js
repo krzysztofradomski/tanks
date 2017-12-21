@@ -43,6 +43,7 @@ io.on('connection', (socket) => {
 	if (player === 'Player limit') {
 		console.log('Too many players.');
 		console.log('Creating new game...');
+		game.io.to(counter).emit('reload');
 		counter = counter + 1;
 		games[counter] = new Game(counter, socket);
 		game = games[counter];
