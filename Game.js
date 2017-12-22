@@ -168,16 +168,39 @@ module.exports = class Game {
             this.on = true;
             this.running = setInterval(() => {
             	//if (this.PlayerA.lives <= 0) this.gameOver();   
-	            if (!!this.PlayerA) {
-	      			this.PlayerA.shooting();
-	      			if (this.PlayerA.gameOver || this.PlayerA.lives <= 0) this.gameOver();
-	      								
+	     //        if (!!this.PlayerA) {
+	     //  			this.PlayerA.shooting();
+	     //  			if (this.PlayerA.gameOver || this.PlayerA.lives <= 0) this.gameOver();      								
+  				// }
+  				if (!!this.PlayerA || !!this.PlayerB) {
+  					if ( (this.PlayerA === null && (this.PlayerB.gameOver || this.PlayerB.lives <= 0) ) || 			 
+					 	 (this.PlayerB === null && (this.PlayerA.gameOver || this.PlayerA.lives <= 0) ) ) {
+					      this.gameOver(); 
+					}
+  				}
+  				if (!!this.PlayerA) {
+  					this.PlayerA.shooting();			
+  					if (this.PlayerA.lives <= 0) { 
+  						this.PlayerA = null; 
+  					} else
+  						if (this.PlayerA.gameOver)  {
+  							this.gameOver();
+  						}
+					
   				}
   				if (!!this.PlayerB) {
-  					this.PlayerB.shooting();
-  					if (this.PlayerB.gameOver) this.gameOver();
-  					if (this.PlayerB.lives <= 0) this.PlayerB = null;
+  					this.PlayerB.shooting();			
+  					if (this.PlayerB.lives <= 0) { 
+  						this.PlayerB = null; 
+  					} else
+  						if (this.PlayerB.gameOver)  {
+  							this.gameOver();
+  						}
+  					
   				}
+  				// if (!this.PlayerB && !this.PlayerB) {
+  				// 	this.gameOver();
+  				// }
   				if (Date.now() % 11 === 0 ) {
   					this.createEnemy();	
   				}
@@ -364,11 +387,10 @@ module.exports = class Game {
     	console.log('Game Over');
     	this.io.to(this.counter).emit('gameover', this.topScores);
     	this.io.to(this.counter).emit('scores', this.topScores);
+    	this
     	 //this.publishScore();  	 	 
     }
 
-    gameOverClient() {
-    }
 
 	 checkTopScores(firebase) {
 	 	this.topScores = [];

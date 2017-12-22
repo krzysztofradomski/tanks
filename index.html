@@ -54,7 +54,8 @@
    </stats>
     <canvas id="myCanvas" width="500" height="500"></canvas>
     <controls>
-     <button  type="button" disabled id="start">Join game</button>
+     <button  type="button" disabled id="start">Join battle</button>
+     <button  type="button" disabled id="reload" onclick="location.reload()">Reload</button>
      <!--<button  type="button" disabled id="stop">Stop</button>
      <button  type="button" disabled id="reset">Reset</button>-->
      Movement - arrows (⇦ ⇨ ⇧ ⇩), shooting - 'Q'.
@@ -127,6 +128,7 @@
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
           $("#reset").attr("disabled", false);
+
            $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
           return false;
@@ -135,6 +137,7 @@
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
           $("#reset").attr("disabled", false);
+          $("#reload").attr("disabled", false);
           $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
         });
@@ -244,6 +247,14 @@
         socket.on('scores', function(topscoresdata){   
           drawScores(topscoresdata);
         });
+           // socket.on('askForScores', function(topscoresdata){
+        //   let playerName = prompt("Please enter your name (max 15 characters):", "Player Unknown");
+        //   if (!!playerName) {
+        //     playerName = playerName.length > 15 ? playerName.slice(0,15) + '...' : playerName;
+        //   }
+        //   socket.emit('gameoverplayerdata', playerName);  
+        //   setTimeout(function(){drawScores(topscoresdata);},1000);
+        // });
         socket.on('gameover', function(topscoresdata){
           context.clearRect(0, 0, canvas.width, canvas.height);
           $("#start").attr("disabled", true);
