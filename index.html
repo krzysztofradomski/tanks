@@ -1,18 +1,47 @@
 <!doctype html>
-<html>
+<html lang="eng">
+  
   <head>
     <title>Tanks Online</title>
+    <meta name="description" content="Tanks Online Multiplayer Version">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
     <style>
-      body {background-color: grey;}
-      * { font-family: monospace;}
-      button {color: white; background-color: black; border:1px solid black; padding: 5px; margin: 5px; margin-left: 0; margin-bottom: 5px;  }
-      button:hover:enabled, button:active:enabled {border: 1px solid white; cursor: pointer;}
-      canvas {width: 500px; display: block; margin-left: auto; margin-right: auto; background-color: black; border:1px solid white;}
+      * { 
+          font-family: monospace;
+          font-size: 12px;
+        }
+      body {
+        background-color: grey;
+        margin: 0;
+      }
+      button {
+        color: white; 
+        background-color: black; 
+        border:1px solid black; 
+        padding: 5px; 
+        margin: 5px; 
+        margin-left: 0;
+      }
+      button:hover:enabled, button:active:enabled {
+        border: 1px solid white; 
+        cursor: pointer;
+      }
+      canvas {
+        width: 500px; 
+        display: block; 
+        margin-left: auto; 
+        margin-right: auto; 
+        background-color: black; 
+        border:1px solid white;
+      }
       stats, topscores  {
-            display: block;
-    width: 500px;
-    margin-left: auto;
-    margin-right: auto;
+        display: block;
+        width: 500px;
+        margin-left: auto;
+        margin-right: auto;
       }
       stats > * {
         width: 49%;
@@ -20,45 +49,59 @@
         margin-left: 0;
         display: inline-block;;
       }
+      stats > * > p, topscores > p{
+       background: black;
+        padding: 5px;
+        color: white;
+      }
       playera {
         text-align: left;
       }
       playerb {
         text-align: right;
+      }   
+      controls {
+        width: 500px; 
+        display: block; 
+        margin-left: auto; 
+        margin-right: auto; 
       }
-      stats > * > p, topscores > p{
-       background: black;
-    padding: 5px;
-    color: white;
-    }
-    body {margin: 0;}
-
-
-      controls {width: 500px; display: block; margin-left: auto; margin-right: auto; }
-      gameover h2 {position: absolute; top: -1000px; width: 95%;  margin-left: auto; margin-right: auto; text-align: center; transition: top 2s;     font-size: 150px; text-shadow: 2px 2px 2px black; color: white;}
+      gameover h2 {
+        position: absolute; 
+        top: -1000px; 
+        width: 95%;  
+        margin-left: auto; 
+        margin-right: auto; 
+        text-align: center; 
+        transition: top 2s;     
+        font-size: 150px; 
+        text-shadow: 2px 2px 2px black; 
+        color: white;
+      }
     </style>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   </head>
+  
   <body>
-    <img id="testimage" src="https://www.spriters-resource.com/resources/sheets/57/60016.png" style="display: none">
     <stats>
-    <playerA>
-      <p>PlayerA Score: <span class="scoreValue"></span></p>
-      <p>PlayerA Lives: <span class="livesValue"></span></p>
-    </playerA>
-    <playerB>
-      <p>PlayerB Score: <span class="scoreValue"></span></p>
-      <p>PlayerB Lives: <span class="livesValue"></span></p>
-    </playerB>
-   </stats>
+      <playerA>
+        <p>PlayerA Score: <span class="scoreValue"></span></p>
+        <p>PlayerA Lives: <span class="livesValue"></span></p>
+      </playerA>
+      <playerB>
+        <p>PlayerB Score: <span class="scoreValue"></span></p>
+        <p>PlayerB Lives: <span class="livesValue"></span></p>
+      </playerB>
+    </stats>
     <canvas id="myCanvas" width="500" height="500"></canvas>
     <controls>
-     <button  type="button" disabled id="start">Join battle</button>
-     <button  type="button" disabled id="reload" onclick="location.reload()">Reload</button>
-     <!--<button  type="button" disabled id="stop">Stop</button>
-     <button  type="button" disabled id="reset">Reset</button>-->
-     Movement - arrows (⇦ ⇨ ⇧ ⇩), shooting - 'Q'.
+      <button  type="button" disabled id="start">Join battle</button>
+      <button  type="button" disabled id="reload" onclick="location.reload()">Reload</button>
+      <button  type="button" disabled id="roundNumber">Round: 1</button>
+      <!--<button  type="button" disabled id="stop">Stop</button>
+      <button  type="button" disabled id="reset">Reset</button>-->
+      Move: arrows (⇦ ⇨ ⇧ ⇩), shoot: 'Q'.
    </controls> 
    <gameover>
     <h2>GAME OVER</h2>
@@ -68,9 +111,16 @@
     <p>2nd place: </p>
     <p>3rd place: </p>
    </topscores>
+
     <script>
       $(function () {
-        setTimeout(function(){console.log(scoresData); if (scoresData === null) {console.log('needs reload');location.reload();}}, 1000);
+        setTimeout(() => {
+          console.log(scoresData); 
+          if (scoresData === null) {
+            console.log('needs reload');
+            location.reload();
+          }
+        }, 2000);
         let sprites = new Image();
         sprites.src = "https://www.spriters-resource.com/resources/sheets/57/60016.png";
         let enemyTanksPositions = {
@@ -95,11 +145,12 @@
           'x': -50,
           'y': -50
         };
+        let gameNumber = null;
         let scoresData = null;
         let canvas = document.getElementById('myCanvas');
         let context = canvas.getContext('2d');
         let socket = io();
-        function drawScores(data) {
+        let drawScores = (data) => {
           //console.log(data);
           scoresData = data;
           for (let j = 0; j < 3; j++) {
@@ -108,46 +159,44 @@
             //console.log(text);
             document.querySelectorAll("topscores p")[j].textContent = text;
           }
-        }
-        document.onkeydown = function (e) {
+        };
+        document.onkeydown = (e) => {
             e = e || window.event;
             socket.emit('keypressed', e.key)
         };
-        $('#start').click(function(){
+        $('#start').click( () => {
           socket.emit('gamestart');
-
           return false;
         });
-        $('#stop').click(function(){
+        $('#stop').click( () =>{
           socket.emit('gamestop');
           return false;
         });
-        $('#reset').click(function(){
+        $('#reset').click( () =>{
           context.clearRect(0, 0, canvas.width, canvas.height);
           socket.emit('gamereset');
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
           $("#reset").attr("disabled", false);
-
-           $("gameover h2").css('display', "none");
+          $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
           return false;
         });
-        socket.on('ready', function(){
+        socket.on('ready', (data) => {
           $("#start").attr("disabled", false);
           $("#stop").attr("disabled", false);
           $("#reset").attr("disabled", false);
           $("#reload").attr("disabled", false);
           $("gameover h2").css('display', "none");
           $("gameover h2").css('top', "-1000px");
+          gameNumber = data;
+          console.log('game nr ' + data);
         });
-        socket.on('gameinfo', function(data){
-         console.log('game nr ' + data);
-        });
+        // socket.on('gameinfo', (data) => {
+        //   console.log('game nr ' + data);
+        // });
         socket.on('gamestart', function(gamestate){
-            //console.log(gamestate.playerA);
-         
-           
+            //console.log(gamestate.playerA);    
             context.clearRect(0, 0, canvas.width, canvas.height);
             if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
@@ -193,7 +242,11 @@
             if (gamestate.eagle && gamestate.eagle.on) {
               let r = gamestate.eagle.size;
               let x = gamestate.eagle.x;
-              let y = gamestate.eagle.y;   
+              let y = gamestate.eagle.y;
+              let round = gamestate.round;
+              if (document.getElementById('roundNumber').textContent != "Round: " + round) {
+                  document.getElementById('roundNumber').textContent = "Round: " + round;
+              }
               // context.beginPath();
               // context.fillStyle = gamestate.eagle.color
               // context.fillRect(x,y,r,r);
@@ -270,7 +323,7 @@
             if (!!playerName) {
               playerName = playerName.length > 15 ? playerName.slice(0,15) + '...' : playerName;
             }
-            socket.emit('gameoverplayerdata', playerName);
+            socket.emit('gameoverplayerdata', playerName, gameNumber);
           }, 2200)
         });
         socket.on('enemyExplosion', function(position){

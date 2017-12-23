@@ -23,7 +23,8 @@ module.exports = class Game {
         this.PlayerB = null;
         this.firebase = fb;
         this.topScores = [];
-        this.counter = counter;
+        this.gameRoom = counter;
+        this.round = 1;
     };
 
     init() {
@@ -71,7 +72,7 @@ module.exports = class Game {
     	this.drawEagle();
     }
 
-    createEnemy() {
+    createEnemy(roundSpeed) {
     	if (this.enemies.length < 5) {
     		this.enemycount +=1;
     		let enemyName = 'enemy' + this.enemycount
@@ -81,7 +82,7 @@ module.exports = class Game {
 	    		name: enemyName,
 	    		level: 1,
 	    		lives: 1,
-	    		speed: this.tankspeed,
+	    		speed: roundSpeed || this.tankspeed,
 	    		origin: {x: x, y: y},
 	    		position: {x: x, y: y},
 	    		on: false
@@ -96,7 +97,7 @@ module.exports = class Game {
     	this.enemycount = 0;
         this.enemies = [];
     	for (let count = 0; count < this.enemiesLimit; count++) {
-    		this.createEnemy();
+    		this.createEnemy(this.round);
     	}
     		// console.log('enemies = ');
 	    	// console.log(this.enemies);
@@ -142,6 +143,21 @@ module.exports = class Game {
     	this.obstacles = this.obstacles.concat(Bunker.bunkerStructure);
     };
 
+    checkRound() {
+    	if (this.enemies.length === 0 && (!this.PlayerA || !this.PlayerB)) {
+    		this.getNextRound();
+    	}
+    }
+
+    getRound() {
+    	return this.round;
+    }
+
+    getNextRound() {   
+    	this.round++;
+    	this.createEnemies();
+    }
+
     reset() {
         if (this) {
             this.on = false;
@@ -149,7 +165,7 @@ module.exports = class Game {
             this.enemies = [];
             this.obstacles = [];
             this.init();
-           if (this.PlayerA) {
+            if (this.PlayerA) {
         		this.PlayerA.reset(this.obstacles);
         	};
         	if (this.PlayerB) {
@@ -201,9 +217,10 @@ module.exports = class Game {
   				// if (!this.PlayerB && !this.PlayerB) {
   				// 	this.gameOver();
   				// }
-  				if (Date.now() % 11 === 0 ) {
-  					this.createEnemy();	
-  				}
+  				// if (Date.now() % 11 === 0 ) {
+  				// 	this.createEnemy();	
+  				// }
+  				this.checkRound();
       			this.enemies.map((v,i) => {
       				if (this.enemies[i] && this[this.enemies[i].name]) {
       				this[this.enemies[i].name].move();
@@ -230,7 +247,15 @@ module.exports = class Game {
 	                }
 	            };
       		})
-                this.io.to(this.counter).emit('gamestart', {enemies: this.enemies, obstacles: this.obstacles, playerA: this.PlayerA, playerB: this.PlayerB, eagle: this.eagle});
+                this.io.to(this.gameRoom).emit('gamestart', {
+                	enemies: this.enemies, 
+                	obstacles: this.obstacles, 
+                	playerA: this.PlayerA, 
+                	playerB: this.PlayerB, 
+                	eagle: this.eagle,
+                	round: this.round,
+                	gameRoom: this.gameRoom
+                });
                 //console.log({enemies: this.enemies, obstacles: this.obstacles})
                 
             }, this.refreshRate)
@@ -365,13 +390,13 @@ module.exports = class Game {
     }
 
     killEnemyTank(tank, player) {
-    	this.io.to(this.counter).emit('enemyExplosion', tank.position);
+    	this.io.to(this.gameRoom).emit('enemyExplosion', tank.position);
     	this[player.name].missile = null;
         this[tank.name].color = 'white';
         this[tank.name] = null;
         this.enemies.splice(this.enemies.indexOf(tank), 1);
         //console.log(tank.name + ' hit by ' + player.name);
-        player.score += 1;
+        player.score += this.round;
 
     }
 
@@ -385,8 +410,8 @@ module.exports = class Game {
         this.PlayerB = null;
         this.eagle = null;
     	console.log('Game Over');
-    	this.io.to(this.counter).emit('gameover', this.topScores);
-    	this.io.to(this.counter).emit('scores', this.topScores);
+    	this.io.to(this.gameRoom).emit('gameover', this.topScores);
+    	this.io.to(this.gameRoom).emit('scores', this.topScores);
     	this
     	 //this.publishScore();  	 	 
     }
@@ -415,7 +440,7 @@ module.exports = class Game {
 				}
 			   
 			};
-			this.io.to(this.counter).emit('scores', this.topScores);
+			this.io.to(this.gameRoom).emit('scores', this.topScores);
 		})
 		
     }
