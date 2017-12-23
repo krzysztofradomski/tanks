@@ -77,7 +77,7 @@ module.exports = class Game {
     		this.enemycount +=1;
     		let enemyName = 'enemy' + this.enemycount
 	    	let x = parseInt(Math.random() * (this.sandbox.x-this.enemysize));
-	    	let y = parseInt(Math.random() * (this.sandbox.y/2));
+	    	let y = parseInt(Math.random() * (this.round * 50 ));
 	    	let enemyConfig =  {
 	    		name: enemyName,
 	    		level: 1,
@@ -197,7 +197,9 @@ module.exports = class Game {
   				if (!!this.PlayerA) {
   					this.PlayerA.shooting();			
   					if (this.PlayerA.lives <= 0) { 
-  						this.PlayerA = null; 
+  						this.io.to(this.gameRoom).emit('askForScores');
+  						this.PlayerA = null;
+  						
   					} else
   						if (this.PlayerA.gameOver)  {
   							this.gameOver();
@@ -206,8 +208,10 @@ module.exports = class Game {
   				}
   				if (!!this.PlayerB) {
   					this.PlayerB.shooting();			
-  					if (this.PlayerB.lives <= 0) { 
-  						this.PlayerB = null; 
+  					if (this.PlayerB.lives <= 0) {
+  					this.io.to(this.gameRoom).emit('askForScores'); 
+  						this.PlayerB = null;
+  						
   					} else
   						if (this.PlayerB.gameOver)  {
   							this.gameOver();

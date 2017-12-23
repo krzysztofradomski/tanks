@@ -1,25 +1,26 @@
-let app = require('express')();
-let http = require('http').Server(app);
-let io = require('socket.io')(http);
-
-let port = process.env.PORT || 3000;
-let admin = require("firebase-admin");
-let serviceAccount = require("./key.json");
-let Game = require('./Game.js')
-let Tank = require('./Tank.js')
-let Player = require('./Player.js')
+const app = require('express')();
+const http = require('http').Server(app);
+const express = require("express");
+const io = require('socket.io')(http);
+const port = process.env.PORT || 3000;
+const admin = require("firebase-admin");
+const serviceAccount = require("./key.json");
+const Game = require('./Game.js')
+const Tank = require('./Tank.js')
+const Player = require('./Player.js')
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: "https://tanks-c0fa6.firebaseio.com"
 });
 
-let db = admin.database();
-let ref = db.ref("/scores");
+const db = admin.database();
+const ref = db.ref("/scores");
 
-app.get('/', (req, res) => {
-  	res.sendFile(__dirname + '/index.html');
-});
+// app.get('/', (req, res) => {
+//   	res.sendFile(__dirname + '/index.html');
+// });
+app.use(express.static("public"));
 
 let counter = 0;
 let games = [];
@@ -28,7 +29,7 @@ console.log('Game nr ' + counter + ' ' + 'created.');
 
 io.on('connection', (socket) => {
 	let room = counter;
-
+    setTimeout(() => {games.splice(games.indexOf(games[room]), 1); console.log('Game nr ' + room + ' deleted.'); },5*60000); //delete game after 5mins
 	console.log('Connecting a new player to game nr ' + counter + '.');
 
 	if (!games[counter]) {
