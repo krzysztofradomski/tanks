@@ -30,7 +30,7 @@ module.exports = class Player {
                     color: this.color, 
                     origin: this.origin,
                     position: this.position 
-                    }
+                    };
         }
         return `Player does not exist`;
     }
@@ -62,10 +62,10 @@ module.exports = class Player {
                 this.position.x += 0;
                 this.position.y += 0;
         }
-        if (this.position.x > this.sandbox.x-this.drawsize) {this.position.x = this.sandbox.x - this.drawsize}
-        if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.sandbox.y - this.drawsize}
-        if (this.position.x < 0) {this.position.x = 0};
-        if (this.position.y < 0) {this.position.y = 0};
+        if (this.position.x > this.sandbox.x-this.drawsize) {this.position.x = this.sandbox.x - this.drawsize;}
+        if (this.position.y > this.sandbox.y-this.drawsize) {this.position.y = this.sandbox.y - this.drawsize;}
+        if (this.position.x < 0) {this.position.x = 0;}
+        if (this.position.y < 0) {this.position.y = 0;}
         this.obstaclesCollisionDetection();
     }
 
@@ -128,9 +128,7 @@ module.exports = class Player {
     }
 
    shooting() {
-        //this.loading();
-       
-           
+        //this.loading();       
         if (!!this.missile) {
             this.missile.position[this.missile.axis] += this.missile.vector;
             if (this.missile.position.x > this.sandbox.x || 
@@ -138,7 +136,7 @@ module.exports = class Player {
                 this.missile.position.x < 0 ||
                 this.missile.position.y < 0 ) {
                 this.missile = null;
-            };
+            }
             this.obstaclesHitDetection();     
         }
        
@@ -147,31 +145,25 @@ module.exports = class Player {
     obstaclesCollisionDetection() {
         this.obstacles.map((v2,i,arr) => { 
             if (v2) {
-                let v1 = this;
                 var a = this.position.x - v2.x > 0 ? this.position.x - v2.x : v2.x - this.position.x;
                 var b = this.position.y - v2.y;
                 let distance = Math.sqrt(a*a + b*b);
                 if (distance < this.drawsize) {
-
                     if (this.position.x > v2.x) { //po prawej
-                        this.position.x += v2.x+this.drawsize - this.position.x
-                    };
+                        this.position.x += v2.x+this.drawsize - this.position.x;
+                    }
                     if (this.position.y > v2.y) { //u dolu
-                        this.position.y += v2.y+this.drawsize - this.position.y
-                    };
+                        this.position.y += v2.y+this.drawsize - this.position.y;
+                    }
                     if (this.position.x < v2.x) { //po lewej
                         this.position.x -= v2.x - this.position.x;
-                    };
+                    }
                     if (this.position.y < v2.y) { //u gory
                         this.position.y -= v2.y - this.position.y;
-                    };
-                   
-                    //console.log('obstacle collision distance:');
-                    //console.log(distance)
-                    return;
+                    }
                 }
-            };
-        })
+            }
+        });
     }
 
     obstaclesHitDetection() {
@@ -182,7 +174,7 @@ module.exports = class Player {
                 var b = (this.missile.position.y+this.missile.size/2) - (v2.y+v2.size/2);
                 let distance = Math.sqrt(a*a + b*b);
                 if (distance < this.drawsize-this.missile.size && v2.on) {
-                   console.log('player suicide, game over');
+                   console.log('Player suicide, game over.');
                    this.gameOver = true;
                 }
                 if (distance < this.drawsize-this.missile.size) {
@@ -191,20 +183,12 @@ module.exports = class Player {
                 
             }
         });
-
-    };
+    }
 
     obstaclesDestruction(obstacle) {
-        console.log('obstacle hit by player');
+        //console.log('obstacle destroyed by player');
         this.missile = null;
         this.obstacles.splice(this.obstacles.indexOf(obstacle), 1);
     }
 
-
-
-    kill() {
-       
-        return `Player does not exist`;
-    }
-
-}
+};

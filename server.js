@@ -5,9 +5,8 @@ const io = require('socket.io')(http);
 const port = process.env.PORT || 3000;
 const admin = require("firebase-admin");
 const serviceAccount = require("./key.json");
-const Game = require('./Game.js')
-const Tank = require('./Tank.js')
-const Player = require('./Player.js')
+const Game = require('./Game.js');
+
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -24,6 +23,7 @@ app.use(express.static("public"));
 
 let counter = 0;
 let games = [];
+let game = null;
 console.log('Game nr ' + counter + ' ' + 'created.');
 
 
@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
   		socket.on('gamestart', () => {
   		
   		console.log('Game  nr ' + game.gameRoom + ' started.');
-  		setTimeout(() => {game.start()},100);
+  		setTimeout(() => {game.start();},100);
   		//console.log(game.enemycount);
   	
 	  	});
@@ -77,7 +77,6 @@ io.on('connection', (socket) => {
 	  		player = game.createPlayer();
 	  		game.checkTopScores(ref);
 		    game.reset();
-		
 	  	});
 
 	  	socket.on('disconnect', () => {
@@ -88,7 +87,7 @@ io.on('connection', (socket) => {
 		    if ( game.PlayerA === null && game.PlayerB === null) {
 		    	//game.reset();
 		    	//game = null;
-		    	setTimeout(() => {game.stop()},200);
+		    	setTimeout(() => {game.stop();},200);
 		    	//setTimeout(() => {games.splice(games.indexOf(games[room]), 1); console.log('Game nr ' + room + ' deleted.'); },2000);
 		    }	     
 	  	});
@@ -100,14 +99,14 @@ io.on('connection', (socket) => {
 	  	socket.on('gameoverplayerdata', (name, room) => {
 	  		console.log(name ? 'Game over data received. Player name: ' + name : "Game over data received. No player name, not saving any data.");
 		    if (name) {
-		    	game.publishScore(ref, name, player);
-		    };
+		    	game.publishScore(ref, name, player, room);
+		    }
 		    //game[counter] = null;
 		    counter = counter + 1;
 		    setTimeout(() => {games.splice(games.indexOf(games[room]), 1); console.log('Game nr ' + room + ' deleted.'); },2000);
 	  	});
 
-	};
+	}
 
 });
 

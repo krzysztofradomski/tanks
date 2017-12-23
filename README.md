@@ -1,22 +1,22 @@
 # Tanks! You're welcome!
-## A javascript game, inspired by the arcade classic 'Tank City'
-### Now featuring: 2 players online multiplayer!
+## Gra przeglądarkowa, inspirowana klasykiem 'Tank City'.
+### Wersja singleplayer: https://tanks-singleplayer.herokuapp.com (porzucona)
+### Wersja multiplayer na dwie osoby: https://tanks-multiplayer.herokuapp.com/
+
+Możliwa rozgrywka w jedną lub dwie osoby. Kliknij "Join game", aby dołączyć do gry / stworzyć nową.
+(Nowy gracz jest automatycznie dołączany do ostatniej założenej gry, która posiada wolne miejsce. Jeśli takiej nie ma, serwer spróbuje stworzyć nową grę i połączyć z nią gracza.)
+
+Gra toczy się w rundach. W każdej rundzie dostajemy trudniejszych (szybszych) przeciwników, zwiększa się też ich ilość (plus 1 co rundę). Ostatnia runda to runda 10, ale jeszcze nikomu nie udało się do niej dojść :)
+
+Za każdy zniszczony czołg dostaje się punkty, tyle punktów jaki jest numer rundy.
+
+Gracz zostaje trafiony przez czołg przeciwnika = strata 1 życia. (brak friendly-fire)
+
+Gracz straci wszystkie 5 żyć = koniec gry dla gracza.
+
+Kolizja z czołgiem przeciwnikiem = koniec gry dla gracza.
+
+Zniszczenie orzełka = koniec gry dla obu graczy.
 
 
-	Goal is not to use any JS game libraries and still get the job done.
-	Uses: Node.js, Socket.io, jQuery, HTML5, Firebase.
-
-To do list:
-- enemy tank generator DONE
-- enemy tank movement DONE
-- random obstacles generator WORK IN PROGRESS
-- tank collision detection DONE
-- 2 players online mode DONE
-- tanks shooting DONE
-- player shooting DONE
-- player lives DONE
-- player score DONE
-- orzełek inmplementation DONE
-- support for more than one game at a time
-- front end
-- optimizing hitboxes
+	Użyte technologie: Node.js, Socket.io, jQuery, HTML5, Firebase, Heroku.

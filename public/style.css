@@ -1,0 +1,73 @@
+* { 
+          font-family: monospace;
+          font-size: 13px;
+        }
+      body {
+        background-color: grey;
+        margin: 0;
+      }
+      button {
+        color: white; 
+        background-color: black; 
+        border:1px solid black; 
+        padding: 5px; 
+        margin: 5px; 
+        margin-left: 0;
+        margin-right: 0;
+      }
+      button:hover:enabled, button:active:enabled {
+        border: 1px solid white; 
+        cursor: pointer;
+      }
+      canvas {
+        width: 500px; 
+        display: block; 
+        margin-left: auto; 
+        margin-right: auto; 
+        background-color: black; 
+        border:1px solid white;
+      }
+      stats, topscores  {
+        display: block;
+        width: 500px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      stats > * {
+        width: 49%;
+        margin-right: 0;
+        margin-left: 0;
+        display: inline-block;;
+      }
+      stats > * > p, topscores > p {
+        background: black;
+        padding: 5px;
+        color: white;
+        margin-top: 5px;
+        margin-bottom: 5px;
+      }
+      playera {
+        text-align: left;
+      }
+      playerb {
+        text-align: right;
+      }   
+      controls {
+        width: 500px; 
+        display: block; 
+        margin-left: auto; 
+        margin-right: auto; 
+        font-weight: bold;
+      }
+      gameover h2 {
+        position: absolute; 
+        top: -1000px; 
+        width: 95%;  
+        margin-left: auto; 
+        margin-right: auto; 
+        text-align: center; 
+        transition: top 2s;     
+        font-size: 150px; 
+        text-shadow: 2px 2px 2px black; 
+        color: white;
+      }

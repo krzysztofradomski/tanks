@@ -73,7 +73,7 @@ module.exports = class Game {
     }
 
     createEnemy(roundSpeed) {
-    	if (this.enemies.length < 5) {
+    	if (this.enemies.length < this.enemiesLimit) {
     		this.enemycount +=1;
     		let enemyName = 'enemy' + this.enemycount
 	    	let x = parseInt(Math.random() * (this.sandbox.x-this.enemysize));
@@ -153,8 +153,9 @@ module.exports = class Game {
     	return this.round;
     }
 
-    getNextRound() {   
+    getNextRound() {
     	this.round++;
+    	this.enemiesLimit++;
     	this.createEnemies();
     }
 
@@ -449,7 +450,7 @@ module.exports = class Game {
 		
     }
 
-    publishScore(firebase, nickname, player) {
+    publishScore(firebase, nickname, player, room) {
     	if (!!nickname) {
     		let name = nickname;
 	    	let score = player.score;
@@ -457,7 +458,8 @@ module.exports = class Game {
 	    	let data = {
 			    name: name,
 			    score: score,
-			    date: date
+			    date: date,
+			    game: room
 			};
 	    	firebase.push(data);
 			console.log('Publishing data to firebase: ' + name + ' ' + score + ' ' + date)

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="eng">
+  
+  <head>
+    <title>Tanks Online</title>
+    <meta name="description" content="Tanks Online Multiplayer Version">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="preload" as="style" href="style.css" onload="this.rel='stylesheet'">
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    <script defer src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script defer src="main.js"></script>
+  </head>
+  
+  <body>
+    <stats>
+      <playerA>
+        <p>PlayerA Score: <span class="scoreValue"></span></p>
+        <p>PlayerA Lives: <span class="livesValue"></span></p>
+      </playerA>
+      <playerB>
+        <p>PlayerB Score: <span class="scoreValue"></span></p>
+        <p>PlayerB Lives: <span class="livesValue"></span></p>
+      </playerB>
+    </stats>
+    <canvas id="myCanvas" width="500" height="500"></canvas>
+    <controls>
+      <button  type="button" disabled id="start">Join battle</button>
+      <button  type="button" disabled id="reload" onclick="location.reload()">Reload</button>
+      <button  type="button" disabled id="roundNumber">Round: 1</button>
+      <!--<button  type="button" disabled id="stop">Stop</button>
+      <button  type="button" disabled id="reset">Reset</button>-->
+      Move: arrows (⇦ ⇨ ⇧ ⇩), shoot: 'Q'.
+   </controls> 
+   <gameover>
+    <h2>GAME OVER</h2>
+   </gameover>
+   <topscores>
+    <p>1st place: </p>
+    <p>2nd place: </p>
+    <p>3rd place: </p>
+   </topscores>
+
+    <script>
+      
+    </script>
+  </body>
+</html>
