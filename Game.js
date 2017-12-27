@@ -11,7 +11,7 @@ module.exports = class Game {
         this.obstaclesize = 25;
         this.on = false;
         this.refreshRate = 1000 / 25;
-        this.tankspeed = 1; ///enemy tank speed, best if 3-5
+        this.tankspeed = 2; ///enemy tank speed, best if 3-5
         this.running;
         this.enemies = [];
         this.enemycount = 0;
@@ -29,8 +29,11 @@ module.exports = class Game {
 
     init() {
     	this.enemycount = 0;
-        this.createObstacles();
+        //this.createObstacles();
+        this.obstaclesGenerator();
     	this.createEnemies();
+    	this.drawEagleBunker();
+    	this.drawEagle();
     	//this.io.emit('ready');
     	console.log('Game initialised.');
     	
@@ -66,13 +69,10 @@ module.exports = class Game {
 
     createObstacles() {
     	this.obstacles = [];
-    	//this.obstaclesGenerator();
     	this.obstacles = ObstacleSets.sets[parseInt(Math.random() * ObstacleSets.sets.length)];
-    	this.drawEagleBunker();
-    	this.drawEagle();
     }
 
-    createEnemy(roundSpeed) {
+    createEnemy(roundSpeed, roundDifficulty) {
     	if (this.enemies.length < this.enemiesLimit) {
     		this.enemycount +=1;
     		let enemyName = 'enemy' + this.enemycount
@@ -81,13 +81,12 @@ module.exports = class Game {
 	    	let enemyConfig =  {
 	    		name: enemyName,
 	    		level: 1,
-	    		lives: 1,
-	    		speed: roundSpeed || this.tankspeed,
+	    		lives: roundDifficulty || 1,
+	    		speed: this.tankspeed + (roundSpeed / 10 ) || this.tankspeed,
 	    		origin: {x: x, y: y},
-	    		position: {x: x, y: y},
-	    		on: false
+	    		position: {x: x, y: y}
 	    	}
-	    	this[enemyName] = new Tank (this.io, enemyConfig);
+	    	this[enemyName] = new Tank (enemyConfig);
 
 	    	this.enemies.push(this[enemyName].info);
     	}
@@ -97,17 +96,17 @@ module.exports = class Game {
     	this.enemycount = 0;
         this.enemies = [];
     	for (let count = 0; count < this.enemiesLimit; count++) {
-    		this.createEnemy(this.round);
+    		this.createEnemy(this.round, this.round);
     	}
-    		// console.log('enemies = ');
-	    	// console.log(this.enemies);
-	    	//console.log('Max allowed number of enemies = ' + this.enemies.length);
     }
 
     obstaclesGenerator() {
+    	let random = (min, max) => {
+    		return Math.round((Math.random() * (max - min) + min) / this.obstaclesize) * this.obstaclesize;
+		};
     	for (let count = 0; count < this.enemiesLimit; count++) {
-    		let x = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
-    		let y = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
+    		let x = random(0,this.sandbox.x-this.obstaclesize);
+    		let y = random(0,400);
     		for (let times = 0; times < 3; times++) {
     			x = x + this.obstaclesize
     			this.obstacles.push({
@@ -116,7 +115,7 @@ module.exports = class Game {
 	    			y: y
     			})
     		};
-    		x = parseInt(Math.random() * (this.sandbox.x-this.obstaclesize));
+    		x = random(0,this.sandbox.x-this.obstaclesize);
     		for (let times = 0; times < 3; times++) {
     			y = y - this.obstaclesize
     			this.obstacles.push({
@@ -129,14 +128,14 @@ module.exports = class Game {
     }
 
     drawEagle() {
-	this.eagle = {
-    	on: true,
-    	size: 25,
-    	x: 250,
-    	y: 475,
-    	color: 'grey'
-    }
-	this.obstacles.push(this.eagle);
+		this.eagle = {
+	    	on: true,
+	    	size: 25,
+	    	x: 250,
+	    	y: 475,
+	    	color: 'grey'
+	    }
+		this.obstacles.push(this.eagle);
     }
 
     drawEagleBunker() {
@@ -157,6 +156,7 @@ module.exports = class Game {
     	this.round++;
     	this.enemiesLimit++;
     	this.createEnemies();
+    	this.obstaclesGenerator();
     }
 
     reset() {
@@ -363,9 +363,8 @@ module.exports = class Game {
 	       	let a = (missile.position.x+missile.size/2) - (tank.position.x + this.drawsize/2);
 	        let b = (missile.position.y+missile.size/2) - (tank.position.y + this.drawsize/2);
 	        let distance = Math.sqrt(a*a + b*b);
-	        if (distance < this.drawsize/2 ) {
-	        	this.killEnemyTank(tank, player);       
-	           
+	        if (distance < this.drawsize/2 ) {     	
+	        	this.killEnemyTank(tank, player);         	          
 	        };
        }    
 	};
@@ -397,12 +396,14 @@ module.exports = class Game {
     killEnemyTank(tank, player) {
     	this.io.to(this.gameRoom).emit('enemyExplosion', tank.position);
     	this[player.name].missile = null;
-        this[tank.name].color = 'white';
-        this[tank.name] = null;
-        this.enemies.splice(this.enemies.indexOf(tank), 1);
-        //console.log(tank.name + ' hit by ' + player.name);
-        player.score += this.round;
-
+    	this[tank.name].lives--;
+    	if (this[tank.name].lives <= 0) {
+    		this[tank.name].color = 'white';
+	        this[tank.name] = null;
+	        this.enemies.splice(this.enemies.indexOf(tank), 1);
+	        //console.log(tank.name + ' hit by ' + player.name);
+	        player.score += this.round;
+    	}
     }
 
     gameOver() {    	 

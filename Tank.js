@@ -1,7 +1,6 @@
 module.exports = class Tank {
 
-    constructor(io, config) {
-        this.io =  io;
+    constructor(config) {
         this.name = config.name;
         this.level = config.level;
         this.lives = config.lives;

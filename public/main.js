@@ -1,8 +1,8 @@
-$(document).ready( () => {
+window.onload = () => {
 
     setTimeout(() => {
         if (scoresData === null) {
-            console.log('Room full, forcing reconnect to get a new game room.');
+            console.log('Room full, forcing reload to get a new game room.');
             location.reload();
         }
     }, 2000);
@@ -11,9 +11,17 @@ $(document).ready( () => {
     sprites.src = "sprites.png";
     const enemyTanksPositions = {
         'x': 240,
-        '-x': 162,
-        'y': 210,
-        '-y': 130
+        '-x': 161,
+        'y': 208,
+        '-y': 130,
+        '1': 0,
+        '2': 16,
+        '3': 32,
+        '4': 48,
+        '5': 64,
+        '6': 80,
+        '7': 96,
+        '8': 112
     };
     const playerPositions = {
         'x': 95,
@@ -49,34 +57,16 @@ $(document).ready( () => {
         socket.emit('keypressed', e.key);
     };
 
-    $('#start').click( () => {
+    document.getElementById('start').addEventListener("click", () => {
         socket.emit('gamestart');
         return false;
     });
 
-    $('#stop').click( () => {
-        socket.emit('gamestop');
-        return false;
-    });
-
-    $('#reset').click( () => {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        socket.emit('gamereset');
-        $("#start").attr("disabled", false);
-        $("#stop").attr("disabled", false);
-        $("#reset").attr("disabled", false);
-        $("gameover h2").css('display', "none");
-        $("gameover h2").css('top', "-1000px");
-        return false;
-    });
-
     socket.on('ready', (data) => {
-        $("#start").attr("disabled", false);
-        $("#stop").attr("disabled", false);
-        $("#reset").attr("disabled", false);
-        $("#reload").attr("disabled", false);
-        $("gameover h2").css('display', "none");
-        $("gameover h2").css('top', "-1000px");
+        document.getElementById("start").disabled = false;
+        document.getElementById("reload").disabled = false;
+        document.querySelector("gameover h2").style.display = "none";
+        document.querySelector("gameover h2").style.top = "-1000px";
         gameNumber = data;
         console.log('Using game room nr ' + gameNumber + '.');
     });
@@ -85,19 +75,20 @@ $(document).ready( () => {
         //console.log(gamestate.playerA);    
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        const drawEnemy = (enemy) => {
+        const drawEnemy = (enemy, round) => {
             let r = enemy.drawsize;
             let x = enemy.position.x;
             let y = enemy.position.y;
             let pos = (enemy.moveto.vector > 0 ? '' : '-') + enemy.moveto.axis;
-            context.drawImage(sprites, enemyTanksPositions[pos], 0, 15, 15, x, y, r, r);
-            context.drawImage(sprites, 255, 130, 15, 15, enemyExplosionPosition.x, enemyExplosionPosition.y, 25, 25);
+            let version = round < 8 ? enemyTanksPositions[String(round)] : enemyTanksPositions[String((Math.random(1) * 8).toFixed(0))];
+            context.drawImage(sprites, enemyTanksPositions[pos], version, 15, 15, x, y, r, r);
+            context.drawImage(sprites, 271, 127, 17, 17, enemyExplosionPosition.x, enemyExplosionPosition.y, 25, 25);
         };
         const drawPlayer = (player) => {
             let lives = gamestate[player].lives;
             let score = gamestate[player].score;
-            $('stats ' + player + ' .scoreValue').text(score);
-            $('stats ' + player + ' .livesValue').text(lives);
+            document.querySelector('stats ' + player + ' .scoreValue').textContent = score;
+            document.querySelector('stats ' + player + ' .livesValue').textContent = lives;
             let playerSize = gamestate[player].drawsize;
             let playerX = gamestate[player].position.x;
             let playerY = gamestate[player].position.y;
@@ -129,7 +120,7 @@ $(document).ready( () => {
         };
 
         gamestate.enemies.map((tank)=> {
-            drawEnemy(tank);
+            drawEnemy(tank, gamestate.round);
             if (tank.missile) {
                 drawMissile(tank, 1, 'grey');
             }
@@ -160,7 +151,7 @@ $(document).ready( () => {
 
     socket.on('enemyExplosion', (position) => {
         enemyExplosionPosition = position;
-        context.drawImage(sprites, 255, 130, 15, 15, enemyExplosionPosition.x, enemyExplosionPosition.y, 25, 25);
+        context.drawImage(sprites, 255, 128, 15, 15, enemyExplosionPosition.x, enemyExplosionPosition.y, 25, 25);
     });
 
     socket.on('scores', (topscoresdata) => {
@@ -177,14 +168,13 @@ $(document).ready( () => {
     });
 
     socket.on('gameover', (topscoresdata) => {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        $("#start").attr("disabled", true);
-        $("#stop").attr("disabled", true);
-        $("#reset").attr("disabled", false);
+        //context.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById("start").disabled = true;
         setTimeout( () => {
-            $("gameover h2").css('top', "100px");
+            document.querySelector("gameover h2").style.top = "100px";
+            context.clearRect(0, 0, canvas.width, canvas.height);
         }, 200);
-        $("gameover h2").css('display', "block");
+        document.querySelector("gameover h2").style.display = "block";
         drawScores(topscoresdata);
         setTimeout(() => {
             let playerName = prompt("Please enter your name (max 15 characters):", "Player Unknown");
@@ -194,6 +184,5 @@ $(document).ready( () => {
             socket.emit('gameoverplayerdata', playerName, gameNumber);
         }, 2200)
     });
-
-    
-});
+   
+};

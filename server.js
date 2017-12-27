@@ -13,12 +13,14 @@ admin.initializeApp({
     databaseURL: "https://tanks-c0fa6.firebaseio.com"
 });
 
+
 const db = admin.database();
 const ref = db.ref("/scores");
 
 // app.get('/', (req, res) => {
 //   	res.sendFile(__dirname + '/index.html');
 // });
+
 app.use(express.static("public"));
 
 let counter = 0;
