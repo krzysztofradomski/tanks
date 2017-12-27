@@ -2,7 +2,7 @@
 ## Gra przeglądarkowa, inspirowana klasykiem 'Tank City'.
 ### Wersja multiplayer na dwie osoby: https://tanks-multiplayer.herokuapp.com/
 
-	Użyłem: JavaScript (vanilla, Node.js, Socket.io), HTML5 canvas, Firebase, Heroku.
+	Użyłem: JavaScript (vanilla, Node.js, Express, Socket.io), HTML5 canvas, Firebase, Heroku.
 
 GRA WSPIERA TYLKO DESKTOPY.
 
