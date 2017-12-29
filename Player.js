@@ -39,7 +39,6 @@ module.exports = class Player {
 	}
 
 	move(key) {
-
 		switch (key) {
 		case 'q':
 			this.loading();
@@ -60,7 +59,6 @@ module.exports = class Player {
 			this.position.x += 10;
 			this.axis = 'x';
 			break;
-
 		default:
 			this.position.x += 0;
 			this.position.y += 0;
@@ -93,16 +91,6 @@ module.exports = class Player {
 			this.obstacles = obst;
 			return 'Player resetted.';
 		}
-		return 'Player does not exist';
-	}
-
-	start() {
-
-		return 'Player does not exist';
-	}
-
-	stop() {
-
 		return 'Player does not exist';
 	}
 
