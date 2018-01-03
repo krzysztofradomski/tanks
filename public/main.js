@@ -54,7 +54,9 @@ window.onload = () => {
 
 	document.onkeydown = (e) => {
 		e = e || window.event;
-		socket.emit('keypressed', e.key);
+		if (e.key.match(/w|s|a|d|q/i)) {
+			socket.emit('keypressed', e.key);
+		}
 	};
 
 	document.getElementById('start').addEventListener('click', () => {
