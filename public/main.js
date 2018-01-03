@@ -82,7 +82,7 @@ window.onload = () => {
 			let x = enemy.position.x;
 			let y = enemy.position.y;
 			let pos = (enemy.moveto.vector > 0 ? '' : '-') + enemy.moveto.axis;
-			let version = round < 8 ? enemyTanksPositions[String(round)] : enemyTanksPositions[String((Math.random(1) * 8).toFixed(0))];
+			let version = round < 9 ? enemyTanksPositions[String(round)] : enemyTanksPositions[String((Math.random(1) * 8).toFixed(0))];
 			context.drawImage(sprites, enemyTanksPositions[pos], version, 15, 15, x, y, r, r);
 			context.drawImage(sprites, 271, 127, 17, 17, enemyExplosionPosition.x, enemyExplosionPosition.y, 25, 25);
 		};
