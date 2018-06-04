@@ -99,7 +99,7 @@ io.on('connection', (socket) => {
 				game.publishScore(ref, name, player, room);
 			}
 			//game[counter] = null;
-			counter = counter + 1;
+			// counter = counter + 1;
 			setTimeout(() => {games.splice(games.indexOf(games[room]), 1); console.log('Game nr ' + room + ' deleted.'); },2000);
 	  	});
 
